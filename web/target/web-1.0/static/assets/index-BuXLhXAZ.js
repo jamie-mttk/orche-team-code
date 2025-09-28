@@ -1,0 +1,1 @@
+import{d as e,A as t,l as a,g as n,I as s}from"./index-B2Hze045.js";const m=e({__name:"index",setup(o){return t({name:"",attachments:[{id:"1",name:"1.txt",size:25,description:"这是我的描述"}]}),(c,r)=>(n(),a(s,{name:"mdiAccessPointNetwork",size:"small",color:"#409eff"}))}});export{m as default};

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="main">
+  <target name="main">
+    <copy tofile="..\..\work\lib/../web/admin.war" overwrite="true">
+      <fileset dir="d:\biz\development\OrcheTeam\code\web\target" erroronmissingdir="false">
+        <include name="*.war" />
+      </fileset>
+    </copy>
+  </target>
+</project>

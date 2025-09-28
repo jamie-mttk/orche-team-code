@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite tests="3" failures="0" name="com.mttk.orche.agent.test.DatabaseInfoTest" time="0.439" errors="0" skipped="0">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="java.vm.version" value="24+36-3646"/>
+    <property name="sun.boot.library.path" value="D:\java\jdk-24\bin"/>
+    <property name="maven.multiModuleProjectDirectory" value="d:\biz\development\OrcheTeam\code"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="path.separator" value=";"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="user.script" value=""/>
+    <property name="user.country" value="CN"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="D:\biz\development\OrcheTeam\code"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="java.runtime.version" value="24+36-3646"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.io.tmpdir" value="D:\temp\tmp_sys_real\"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.variant" value=""/>
+    <property name="stderr.encoding" value="ms936"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="classworlds.conf" value="D:\java\maven\bin\m2.conf"/>
+    <property name="sun.jnu.encoding" value="GBK"/>
+    <property name="stdout.encoding" value="ms936"/>
+    <property name="java.library.path" value="D:\java\jdk-24\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;D:\ProgramData\anaconda3\condabin;C:\Program Files\PowerShell\7;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8\libnvvp;C:\Python312\Scripts\;C:\Python312\;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;D:\Program Files (x86)\VMware\VMware Workstation\bin\;C:\Python310\Scripts\;C:\Python310\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\ProgramData\chocolatey\bin;C:\Program Files\dotnet\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\Microsoft SQL Server\140\Tools\Binn\;C:\Program Files (x86)\Yarn\bin\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;D:\Program Files\nodejs\;D:\Program Files\Ballerina\\bin;C:\Program Files\IDM Computer Solutions\UltraEdit;d:\Program Files (x86)\Tencent\微信web开发者工具\dll;C:\Program Files\NVIDIA Corporation\Nsight Compute 2025.1.0\;C:\Users\jamie\AppData\Roaming\Python\Python312\Scripts;;C:\Program Files\Docker\Docker\resources\bin;D:\Program Files\PuTTY\;C:\Program Files\PowerShell\7\;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Users\jamie\.local\bin;C:\Users\jamie\.cargo\bin;C:\Windows\system32;C:\Users\jamie\AppData\Local\Microsoft\WindowsApps;D:\Program Files\nodejs;C:\Users\jamie\AppData\Local\Programs\Microsoft VS Code\bin;D:\Program Files\Git\bin;D:\java\maven\bin;D:\java\java8\bin;d:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2024.3.1\bin;;C:\Users\jamie\AppData\Local\Yarn\bin;C:\Users\jamie\AppData\Local\Programs\Ollama;C:\Users\jamie\AppData\Roaming\npm;d:\Program Files\Huawei\DevEco Studio\bin;;C:\Users\jamie\.dotnet\tools;D:\ProgramData\anaconda3\Scripts;D:\ai\cursor\resources\app\bin;C:\Users\jamie\.dotnet\tools;C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2024.3.6\bin;;."/>
+    <property name="maven.conf" value="D:\java\maven/conf"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="java.class.version" value="68.0"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="10.0"/>
+    <property name="maven.settings" value="D:\java\maven\conf\settings.xml"/>
+    <property name="library.jansi.path" value="D:\java\maven\lib\jansi-native"/>
+    <property name="user.home" value="C:\Users\jamie"/>
+    <property name="user.timezone" value="Asia/Shanghai"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.specification.version" value="24"/>
+    <property name="user.name" value="jamie"/>
+    <property name="java.class.path" value="D:\java\maven\boot\plexus-classworlds-2.6.0.jar"/>
+    <property name="maven.compiler.executable" value="D:\java\jdk-24\bin\javac"/>
+    <property name="java.vm.specification.version" value="24"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher install -f d:\biz\development\OrcheTeam\code\basicAgent\pom.xml"/>
+    <property name="java.home" value="D:\java\jdk-24"/>
+    <property name="maven.compiler.fork" value="true"/>
+    <property name="user.language" value="zh"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.version" value="24"/>
+    <property name="native.encoding" value="GBK"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="maven.home" value="D:\java\maven"/>
+    <property name="file.separator" value="\"/>
+    <property name="java.version.date" value="2025-03-18"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+  </properties>
+  <testcase classname="com.mttk.orche.agent.test.DatabaseInfoTest" name="com.mttk.orche.agent.test.DatabaseInfoTest.testListTables" time="0.382"/>
+  <testcase classname="com.mttk.orche.agent.test.DatabaseInfoTest" name="com.mttk.orche.agent.test.DatabaseInfoTest.testDataMonitorTable" time="0.043"/>
+  <testcase classname="com.mttk.orche.agent.test.DatabaseInfoTest" name="com.mttk.orche.agent.test.DatabaseInfoTest.testGenerateDatabaseDescription" time="0.014"/>
+</testsuite>

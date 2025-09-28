@@ -1,0 +1,30 @@
+{
+    "active" : true,
+    "belongTo" : "httpEntryService",
+    "name" : "Web Server",
+    "protocol" : "HTTP",
+    "threadPoolCustomize" : false,
+    "threadPoolMaxThreads" : 200,
+    "threadPoolMinThreads" : 20,
+    "threadPoolIdleTimeout" : 60000,
+    "webSystem":true,
+    "connectors" : [
+        {
+            "protocol" : "HTTP",
+            "active" : true,
+            "name" : "API port",
+            "host" : "0.0.0.0",
+            "port" : 0
+        }
+    ],
+    "paths" : [
+        {
+            "uri" : "/",
+            "method" : "*",
+            "type" : "war",
+            "active" : true,
+            "targetWar" : "${serverHome}/web/admin.war"
+        }
+    ],
+    "uriMatchMode" : "STARTWITH"
+}

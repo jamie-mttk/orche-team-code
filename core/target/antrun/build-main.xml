@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="main">
+  <target name="main">
+    <copy tofile="..\..\work\lib/sys/core.jar" overwrite="true">
+      <fileset dir="d:\biz\development\OrcheTeam\code\core\target" erroronmissingdir="false">
+        <include name="*.jar"></include>
+      </fileset>
+    </copy>
+  </target>
+</project>

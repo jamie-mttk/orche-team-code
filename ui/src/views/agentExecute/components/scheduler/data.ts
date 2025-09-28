@@ -1,0 +1,103 @@
+import ScheduleTypeChooser from './ScheduleTypeChooser.vue'
+export const scheduleConfig = {
+    props: {
+        labelWidth: '120px'
+    },
+    "children": [
+        {
+            key: 'mode',
+            mode: 'dynamic',
+            size: 1,
+            label: '定时器类型',
+            defaultVal: 'FIXED',
+            props: {
+                component: ScheduleTypeChooser
+            }
+        },
+        {
+            key: 'fixedTime',
+            mode: 'datetimePicker',
+            label: '执行时间',
+            mandatory: true,
+            size: 1,
+            props: {},
+            bindings: {
+                show: "this.data.mode=='FIXED'"
+            }
+        },
+        {
+            key: 'startTime',
+            mode: 'datetimePicker',
+            label: '开始时间',
+            size: 1,
+            props: {},
+            bindings: {
+                show: "this.data.mode!='FIXED'"
+            }
+        },
+        {
+            key: 'endTime',
+            mode: 'datetimePicker',
+            label: '结束时间',
+            size: 1,
+            props: {},
+            bindings: {
+                show: "this.data.mode!='FIXED'"
+            }
+        },
+        {
+            key: 'repeatInterval',
+            mode: 'input',
+            label: '间隔',
+            mandatory: true,
+            defaultVal: '10',
+            size: 1,
+            props: {
+                dataType: 'number'
+            },
+            bindings: {
+                show: "this.data.mode=='SIMPLE'"
+            }
+        },
+        {
+            key: 'repeatUnit',
+            mode: 'select',
+            label: '单位',
+            mandatory: true,
+            defaultVal: 'minute',
+            size: 1,
+            props: {
+                options: 'hour:小时,minute:分,second:秒,milliSecond:毫秒'
+            },
+            bindings: {
+                show: "this.data.mode=='SIMPLE'"
+            }
+        },
+        {
+            key: 'repeatCount',
+            mode: 'inputNumber',
+            label: '重复次数',
+            description: '-1代表无限重复;\r\n当设置为其他值时,实际执行次数为设置值+1',
+            mandatory: true,
+            defaultVal: '-1',
+            size: 1,
+            props: {
+                min: -1,
+                precision: 0
+            },
+            bindings: {
+                show: "this.data.mode=='SIMPLE'"
+            }
+        },
+        {
+            key: 'cronExpression',
+            mode: 'cron',
+            label: 'CRON表达式',
+            mandatory: false,
+            size: 1,
+            bindings: {
+                show: "this.data.mode=='CRON'"
+            }
+        },
+    ]
+}
