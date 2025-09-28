@@ -1,0 +1,19 @@
+name: Sync to Gitee
+on: [push]
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+         
+      - name: Sync to Gitee
+        run: |
+          git config --global user.name "Auto Syncer"
+          git config --global user.email "auto-syncer@users.noreply.github.com"
+          git remote add gitee https://${{ secrets.GITEE_USER }}:${{ secrets.GITEE_TOKEN }}@gitee.com/jamie0828/orche-team-code.git
+          git push --force gitee HEAD:main
+        env:
+          GIT_TERMINAL_PROMPT: 0
