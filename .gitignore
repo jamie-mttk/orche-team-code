@@ -1,0 +1,44 @@
+# Maven编译输出
+**/target/
+target/
+*.jar
+*.war
+*.ear
+
+# IDE文件
+.metadata/
+.project
+.classpath
+.settings/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.metadata/
+.metadata/.mylyn/
+.metadata/.plugins/
+.metadata/.log
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+
+# 子模块修改（如果需要忽略）
+# quartz-mongodb/
