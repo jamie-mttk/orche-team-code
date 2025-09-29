@@ -17,6 +17,19 @@ OrcheTeam 是一个企业级智能代理（Agent）管理平台，采用模块�
 - **数据持久化** - 基于MongoDB的高性能数据存储，支持大数据量处理
 - **任务管理** - 任务管理和回放
 
+### 屏幕截图
+
+![模型配置](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/model.png)
+![网络搜索智能体](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/webSearch_agent.png)
+![ReAct智能体](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/ReAct_agent.png)
+![执行界面1](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_1.png)
+![执行界面2](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_2.png)
+![执行界面3](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_3.png)
+![执行界面4](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_4.png)
+![执行界面5](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_5.png)
+![执行界面6](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_6.png)
+![任务管理](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/task.png)
+
 
 
 ## 安装
@@ -73,7 +86,7 @@ docker run -d   -p 7474:7474      -v orcheteam_db:/data/db  --name orcheteam   o
 ## 快速开始
 
 ### 模型配置
-测试过千问和 DeepSeek V3，模型必须支持 Function calling，推荐使用最大 Token 数大的模型。
+测试过千问和 DeepSeek V3，模型必须支持 Function calling，建议使用最大 Token 数大的模型。
 
 ### 智能体配置
 - **互联网搜索**：需要 Serper API Key，可访问 https://serpapi.com/ 注册，免费赠送额度足够使用很长时间
