@@ -57,7 +57,8 @@ const props = defineProps<Props>()
 
 
 // 表单数据
-const formData = ref({ 'query': '获取数据后进行3阶多项式回归模型,重点展示拟合值和检测值的关系.生成CSV文件就可以,禁止生成报告.\n自变量: 上游水位,下游水位,温度,检测日期\n因变量: 杨压力\n孔号: 节2-1 \n结果发送到jamie0828@163.com' })
+const formData = ref({})
+// const formData = ref({ 'query': '获取数据后进行3阶多项式回归模型,重点展示拟合值和检测值的关系.生成CSV文件就可以,禁止生成报告.\n自变量: 上游水位,下游水位,温度,检测日期\n因变量: 杨压力\n孔号: 节2-1 \n结果发送到jamie0828@163.com' })
 // const formData = ref({ 'query': '获取数据后进行3阶多项式回归模型,重点展示拟合值和检测值的关系.生成HTML报告.\n自变量: 上游水位,下游水位,温度,检测日期\n因变量: 杨压力\n孔号: 节2-1' })
 // const formData = ref({ 'query': '规划一个明年希望进入英国G5的学生的申请计划,该学生学习A-level,包括 数学/物理/化学和高等数学,目标专业数理统计,使用markdown格式,重点展示申请计划' })
 // const formData = ref({

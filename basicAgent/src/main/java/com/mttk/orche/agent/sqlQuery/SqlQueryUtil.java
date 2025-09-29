@@ -65,7 +65,7 @@ public class SqlQueryUtil {
         String jdbcUrl = (String) data.get("jdbcUrl");
         String jdbcUser = (String) data.get("jdbcUser");
         String jdbcPassword = (String) data.get("jdbcPassword");
-
+        Boolean jdbcReadonly = (Boolean) data.getOrDefault("jdbcReadonly", true);
         if (jdbcDriver == null || jdbcDriver.trim().isEmpty()) {
             throw new IllegalArgumentException("jdbcDriver参数不能为空");
         }
@@ -78,9 +78,12 @@ public class SqlQueryUtil {
         if (jdbcPassword == null) {
             throw new IllegalArgumentException("jdbcPassword参数不能为空");
         }
+
         //
         Class.forName(jdbcDriver);
-        return DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
+        Connection conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
+        conn.setReadOnly(jdbcReadonly);
+        return conn;
     }
 
     // 获取字段注释（无注释时返回字段名）

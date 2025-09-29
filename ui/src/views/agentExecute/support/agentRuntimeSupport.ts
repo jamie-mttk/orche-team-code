@@ -140,6 +140,7 @@ export class AgentRuntime {
                 config.props.labelWidth = '4px'
                 config.props.helpMode = 'placeholder'
                 config.props.size = "default"
+
                 //
 
                 //
@@ -150,6 +151,10 @@ export class AgentRuntime {
                     }
                     //删除label,否则显示会错位
                     delete item.label
+                    if (!item.props) {
+                        item.props = {}
+                    }
+                    item.props.showLabel = false
 
                     //如果是select/chooser,缺省不添加_NAME
                     if ('select' == item.mode) {

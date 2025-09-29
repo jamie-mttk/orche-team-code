@@ -35,6 +35,8 @@ public class JavaCodeAgent extends AbstractAgent {
                 JavaCodeUtil.sendError(javaCodeContext, "生成代码失败", e);
                 continue;
             }
+            //
+            para.getContext().cancelCheck();
             try {
                 ComplieCodeUti.compileCode(javaCodeContext);
             } catch (Throwable t) {
@@ -42,6 +44,8 @@ public class JavaCodeAgent extends AbstractAgent {
                 javaCodeContext.setCompileError(t);
                 continue;
             }
+            //
+            para.getContext().cancelCheck();
             try {
                 ExecuteCodeUtil.executeCode(javaCodeContext);
 

@@ -8,7 +8,7 @@
                     <el-icon>
                         <InfoFilled />
                     </el-icon>
-                    任务信息
+                    基本信息
                 </h3>
                 <div class="info-grid">
                     <div class="info-item">
@@ -61,7 +61,7 @@
                 </h3>
                 <div v-if="agentRuntime?.agentInputConfig?.value" class="task-form">
                     <CdForm ref="inputFormRef" :config="agentRuntime.agentInputConfig.value" :data="formData"
-                        style="width: 100%;" />
+                        :disabledParent="true" style="width: 100%;" />
                 </div>
                 <div v-else class="no-data">
                     <el-empty description="暂无任务信息" />

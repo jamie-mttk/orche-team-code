@@ -1,6 +1,6 @@
 <template>
     <div class="time-display">
-
+        <span class="label">{{ label }}：</span>
         <span class="value">{{ formattedTime }}</span>
     </div>
 </template>
@@ -36,7 +36,7 @@ const formattedTime = computed(() => {
 .label {
     font-weight: 500;
     color: var(--el-text-color-regular);
-    min-width: 0px;
+    min-width: 80px;
     flex-shrink: 0;
 }
 

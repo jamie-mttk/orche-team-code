@@ -113,6 +113,9 @@ const displayRequest = computed(() => {
                     if (!Array.isArray(value)) {
                         break;
                     }
+                    if (value.length == 0) {
+                        break;
+                    }
 
                     html += '<div style="margin-top: 8px;"><strong>文件列表:</strong></div>'
                     html += '<ul style="margin: 4px 0; padding-left: 20px;">'

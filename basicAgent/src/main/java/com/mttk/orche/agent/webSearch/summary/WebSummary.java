@@ -43,7 +43,7 @@ public class WebSummary {
         try {
             return objectMapper.readValue(result, SummaryResult.class);
         } catch (Exception e) {
-            throw new RuntimeException("解析SummaryResult失败，原始结果: " + result, e);
+            throw new RuntimeException("解析SummaryResult失败,原始结果: " + result, e);
         }
     }
 

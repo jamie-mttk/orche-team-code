@@ -183,6 +183,7 @@ export function useSupport(props: ConfigOnlyProps | BaseProps | ContainerProps) 
   //处理disabled binding,用于处理是否禁用
   const isDisabled = computed(() => {
     if (props.disabledParent) {
+
       return true
     }
     if (!props.config?.bindings) {
@@ -347,7 +348,7 @@ export function useSupport(props: ConfigOnlyProps | BaseProps | ContainerProps) 
   const showLabel = computed(() => {
     const showLabel = getPropSafe('showLabel')
 
-    return 'true' == showLabel || showLabel == undefined || showHelpButton.value
+    return showLabel || 'true' == showLabel || showLabel == undefined || showHelpButton.value
   })
 
   //

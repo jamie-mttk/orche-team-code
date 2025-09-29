@@ -1,7 +1,11 @@
 <template>
-  <el-button v-model="buttonAttr" :loading="loading" :disabled="isDisabled" :type="getPropSafe('type')"
-    @click="handleClick">
-    {{ props.config.label }}</el-button>
+
+  <el-tooltip effect="light" :disabled="!description" :raw-content="true" :content="description" :show-after="1000"
+    placement="bottom">
+    <el-button v-model="buttonAttr" :loading="loading" :disabled="isDisabled" :type="getPropSafe('type')"
+      @click="handleClick">
+      {{ props.config.label }}</el-button>
+  </el-tooltip>
 </template>
 <script setup lang="ts">
 import { ref, computed, unref } from 'vue'
@@ -29,6 +33,9 @@ const buttonAttr = computed(() => {
 const loading = ref(false)
 const result = ref([])
 //computed
+const description = computed(() => {
+  return props.config.description
+})
 const itemOptions = computed(() => {
   let options = ''
   result.value.forEach((item) => {

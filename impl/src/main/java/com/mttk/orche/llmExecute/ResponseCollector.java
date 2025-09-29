@@ -39,7 +39,9 @@ class ResponseCollector {
             return;
         }
         // 发送内容增量消息，直接传递LLM原始内容
-        context.sendResponse(new ChatResonseMessage("_llm-response-delta", requestId, line));
+        if (context != null) {
+            context.sendResponse(new ChatResonseMessage("_llm-response-delta", requestId, line));
+        }
         //
 
         JsonNode dataNode = objectMapper.readTree(line);

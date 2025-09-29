@@ -1,7 +1,8 @@
 <template>
   <CdBase :config="props.config" :data="props.data">
     <div class="editor-container">
-      <el-alert :title="placeholder" type="primary" />
+
+      <el-alert :title="placeholder" type="primary" v-if="!showLabel" />
       <MttkWrapComp :config="wrapConfig" ref="monacoEditorRef" class="monaco-editor-wrapper"></MttkWrapComp>
       <div class="drag-bar" :style="dragBarStyle" @mousedown="startDrag"></div>
     </div>
@@ -16,7 +17,7 @@ import { buildMonacoEditorComp } from '@/components/util/monacoEditor'
 import { MttkWrapComp } from 'mttk-vue-wrap'
 
 const props = defineProps<BaseProps>()
-const { modelValue, isDisabled, getPropSafe, placeholder } = useSupport(props)
+const { modelValue, isDisabled, getPropSafe, placeholder, showLabel } = useSupport(props)
 //
 const monacoEditorRef = ref(null)
 //

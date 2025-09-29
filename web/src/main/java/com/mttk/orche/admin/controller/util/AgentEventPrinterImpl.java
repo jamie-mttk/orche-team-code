@@ -29,8 +29,11 @@ public class AgentEventPrinterImpl implements AgentEventPrinter {
         // message.getType().endsWith("-end")) {
         // logger.info("SSE response" + data);
         // }
-
-        emitter.send(SseEmitter.event().data(data.getBytes("UTF-8")));
+        try {
+            emitter.send(SseEmitter.event().data(data.getBytes("UTF-8")));
+        } catch (Exception _e) {
+            // ignore
+        }
 
     }
 

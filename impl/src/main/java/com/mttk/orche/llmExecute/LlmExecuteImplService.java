@@ -47,12 +47,12 @@ public class LlmExecuteImplService extends AbstractService implements LlmExecute
         // 发送LLM开始消息
         name = StringUtil.isEmpty(name) ? "LLM" : name;
         //
-        context.sendResponse(new ChatResonseMessage("_llm-start", requestId, name));
+        sendResponse(context, "_llm-start", requestId, name);
         // 构建请求体
         String requestBody = buildRequestBody(modelConfig, messages, functions);
 
         // 发送请求数据消息
-        context.sendResponse(new ChatResonseMessage("_llm-request", requestId, requestBody));
+        sendResponse(context, "_llm-request", requestId, requestBody);
 
         // 创建HTTP请求
         HttpRequest request = HttpRequest.newBuilder()
@@ -103,8 +103,7 @@ public class LlmExecuteImplService extends AbstractService implements LlmExecute
                     }
                 })
                 .exceptionally(throwable -> {
-                    context.sendResponse(
-                            new ChatResonseMessage("_llm-error", requestId, ThrowableUtil.dumpInfo(throwable)));
+                    sendResponse(context, "_llm-error", requestId, ThrowableUtil.dumpInfo(throwable));
                     throw new RuntimeException("HTTP请求失败: " + throwable.getMessage(), throwable);
                 });
 
@@ -112,7 +111,7 @@ public class LlmExecuteImplService extends AbstractService implements LlmExecute
         future.join();
 
         // 发送LLM结束消息
-        context.sendResponse(new ChatResonseMessage("_llm-end", requestId));
+        sendResponse(context, "_llm-end", requestId);
 
         // 返回收集到的响应
         return responseCollector.buildResponseMessage();
@@ -203,6 +202,26 @@ public class LlmExecuteImplService extends AbstractService implements LlmExecute
         }
 
         return objectMapper.writeValueAsString(requestBody);
+    }
+
+    /**
+     * 发送响应消息的私有方法
+     */
+    private void sendResponse(AgentContext context, String type, String requestId, String content) {
+        sendResponse(context, new ChatResonseMessage(type, requestId, content));
+    }
+
+    /**
+     * 发送响应消息的私有方法（无内容）
+     */
+    private void sendResponse(AgentContext context, String type, String requestId) {
+        sendResponse(context, new ChatResonseMessage(type, requestId));
+    }
+
+    private void sendResponse(AgentContext context, ChatResonseMessage messae) {
+        if (context != null) {
+            context.sendResponse(messae);
+        }
     }
 
 }

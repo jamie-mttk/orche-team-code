@@ -15,6 +15,8 @@ import com.mttk.orche.addon.agent.ChatMessage;
 import com.mttk.orche.addon.agent.ChatResonseMessage;
 import com.mttk.orche.addon.agent.ToolCall;
 import com.mttk.orche.addon.agent.impl.AgentRunnerSupport.AgentParam;
+import com.mttk.orche.core.Server;
+import com.mttk.orche.core.ServerLocator;
 import com.mttk.orche.service.AgentFileService;
 import com.mttk.orche.service.LlmExecuteService;
 import com.mttk.orche.service.LlmModelService;
@@ -30,7 +32,13 @@ public class AgentUtil {
     //
     //
     public static LlmExecuteService getLlmExecuteService(AgentContext context) {
-        return context.getServer().getService(LlmExecuteService.class);
+        Server server = null;
+        if (context == null) {
+            server = ServerLocator.getServer();
+        } else {
+            server = context.getServer();
+        }
+        return server.getService(LlmExecuteService.class);
     }
 
     // 没找到返回null

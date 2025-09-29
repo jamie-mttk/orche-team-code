@@ -1,15 +1,7 @@
 package com.mttk.orche.agent.sqlQuery;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.StringJoiner;
-
 import org.bson.Document;
 
 import com.mttk.orche.addon.AdapterConfig;
@@ -33,6 +25,7 @@ import com.mttk.orche.util.ThrowableUtil;
 @Control(key = "jdbcUrl", label = "JDBC URL", size = 2, mandatory = true)
 @Control(key = "jdbcUser", label = "JDBC用户", size = 2, mandatory = true)
 @Control(key = "jdbcPassword", label = "JDBC密码", size = 2, mandatory = true, props = "type:password")
+@Control(key = "jdbcReadonly", label = "只读访问", description = "只读访问数据库,不进行写操作\n建议打开防止对于数据库的误操作", mode = "checkbox", size = 1, defaultVal = "true")
 @Control(key = "model", label = "模型", mode = "select", size = 1, mandatory = true, props = { "url:llmModel/query" })
 @Control(key = "systemPrompt", label = "系统提示词", mandatory = true, size = 1, defaultVal = Prompt.SYSTEM_PROMPT, mode = "editor", props = {
                 "language:markdown", "height:480" })
@@ -93,7 +86,6 @@ public class SqlQueryAgent extends AbstractAgent implements RequestTarget {
         }
 
         @Override
-
         public Document handleRequest(Document in) throws Exception {
 
                 //

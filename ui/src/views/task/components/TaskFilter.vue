@@ -26,11 +26,11 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="handleQuery">
-                        <Icon name="magnify" size="small" />
+                        <Icon name="mdiMagnify" size="small" />
                         查询
                     </el-button>
                     <el-button @click="handleClearFilters">
-                        <Icon name="mdiFilter" size="small" />
+                        <Icon name="mdiFilterOutline" size="small" />
                         重置条件
                     </el-button>
                 </el-form-item>

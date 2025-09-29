@@ -1,5 +1,6 @@
 <template>
-    <CdBase :config="props.config" :data="props.data">
+
+    <CdBase :config="props.config" :data="props.data" v-if="!isDisabled && modelValue || modelValue.length > 0">
         <div class="files-container">
             <!-- 文件列表 -->
             <el-table v-if="modelValue && modelValue.length > 0" :data="modelValue"
@@ -19,7 +20,7 @@
                 </el-table-column>
                 <el-table-column label="描述" min-width="200">
                     <template #default="{ row }">
-                        <el-input v-model="row.description" placeholder="添加描述..." size="small"
+                        <el-input v-model="row.description" placeholder="添加描述..." size="small" :readonly="isDisabled"
                             @blur="updateDescription(row)" />
                     </template>
                 </el-table-column>
@@ -33,8 +34,9 @@
             </el-table>
 
             <!-- 上传区域 -->
-            <div ref="uploadArea" class="upload-area" :class="{ 'drag-over': isDragOver }" @click="triggerFileInput"
-                @dragover.prevent="handleDragOver" @dragleave.prevent="handleDragLeave" @drop.prevent="handleDrop">
+            <div v-if="!isDisabled" ref="uploadArea" class="upload-area" :class="{ 'drag-over': isDragOver }"
+                @click="triggerFileInput" @dragover.prevent="handleDragOver" @dragleave.prevent="handleDragLeave"
+                @drop.prevent="handleDrop">
                 <div class="upload-content">
                     <Icon name="mdiUpload" size="medium" color="#c0c4cc" />
                     <span class="upload-text">点击或拖拽单个文件到此处上传</span>
@@ -59,7 +61,7 @@ import CdBase from './Base.vue'
 import { formatFileSize } from '@/utils/tools'
 
 const props = defineProps<BaseProps>()
-const { modelValue, placeholder, isDisabled, getPropSafe } = useSupport(props)
+const { modelValue, isDisabled } = useSupport(props)
 if (modelValue.value == undefined) {
     modelValue.value = []
 }

@@ -1,11 +1,12 @@
 <template>
+
   <el-form ref="dataEditForm" :model="data" v-bind="formAttr" v-show="isShow">
     <el-row :gutter="gutter">
       <template :key="c.key" v-for="c in props.config.children">
         <el-col :span="childSize(c)" v-show="isShowFunc(c)">
           <!--普通组件-->
           <component v-if="!isSlot(c) && !isWrap(c)" :is="wrapType(c)" :config="childConfig(c)" :data="data"
-            :expertMode="props.expertMode"></component>
+            :disabledParent="isDisabled"></component>
           <!--MTTK wrap组件-->
           <template v-if="isWrap(c)">
             <MttkWrapComp :config="wrapConfig(c)"></MttkWrapComp>
@@ -41,7 +42,7 @@ import CdBase from './Base.vue'
 const props = defineProps<ContainerProps>()
 //
 
-const { getPropSafe, isShow, childSize, wrapType, isShowFunc } = useSupport(props)
+const { getPropSafe, isShow, childSize, wrapType, isShowFunc, isDisabled } = useSupport(props)
 //computed
 const data = computed(() => props.data)
 //

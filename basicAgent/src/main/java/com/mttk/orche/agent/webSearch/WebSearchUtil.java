@@ -6,6 +6,7 @@ import com.mttk.orche.addon.agent.impl.AgentRunnerSupport.AgentParam;
 import com.mttk.orche.agent.webSearch.query.WebQueryUtil;
 import com.mttk.orche.agent.webSearch.summary.SummaryResult;
 import com.mttk.orche.agent.webSearch.summary.WebSummary;
+import com.mttk.orche.util.StringUtil;
 import com.mttk.orche.agent.webSearch.download.WebDownload;
 import java.util.*;
 
@@ -27,6 +28,8 @@ public class WebSearchUtil {
         SummaryResult lastSummaryResult = null;
         //
         while (loopCount++ < maxLoop) {
+            //
+            para.getContext().cancelCheck();
             // 得到希望查询的关键字列表
             List<String> keyWords = ThinkKeyWords.thinkKeyWords(para,
                     lastSummaryResult == null ? query : lastSummaryResult.getRewriteQuery(), keyWordSearched);
@@ -34,6 +37,8 @@ public class WebSearchUtil {
             if (keyWords.size() == 0) {
                 continue;
             }
+            //
+            para.getContext().cancelCheck();
             //
             List<SearchItem> items = new ArrayList<>(50);
             // 根据key words查找得到列表
@@ -47,10 +52,17 @@ public class WebSearchUtil {
             WebDownload.processItems(items, para.getContext(), para.getConfig());
             // 把有内容的网页加入到最终列表
             itemsSearched.addAll(items);
-
+            //
+            para.getContext().cancelCheck();
             // 评估和汇总
-            lastSummaryResult = WebSummary.reasoningAndSummary(para, query, items,
+            SummaryResult summaryResult = WebSummary.reasoningAndSummary(para, query, items,
                     lastSummaryResult);
+            if (StringUtil.isEmpty(summaryResult)) {
+                // 说明没有找到任何合适的内容,则不修改lastSummaryResult直接退出
+                break;
+            }
+            //
+            lastSummaryResult = summaryResult;
             if (lastSummaryResult != null && lastSummaryResult.getIsAnswer() == 1) {
                 break;
             }

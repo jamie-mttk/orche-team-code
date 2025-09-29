@@ -63,22 +63,22 @@ public class AgentFileServiceImpl extends AbstractService implements AgentFileSe
         // 检查文件是否已存在
         AgentFile existingFile = get(context, fileName);
         if (existingFile != null) {
-            // 更新现有文件
-            throw new Exception("文件已存在:" + fileName);
-        } else {
-            // 创建新文件
-            AgentFile agentFile = new AgentFileImpl(fileName, description, data.length);
-
-            //
-            uploadInternal(context, fileName, data);
-            //
-            context.sendResponse(new ChatResonseMessage("_file-upload", StringUtil.getUUID(),
-                    new ObjectMapper().writeValueAsString(agentFile)));
-            //
-            addFile(context, agentFile);
-            //
-            return agentFile;
+            // 文件已存在,重新生成文件名
+            fileName = fileName + "_" + StringUtil.getUUID();
         }
+        // 创建新文件
+        AgentFile agentFile = new AgentFileImpl(fileName, description, data.length);
+
+        //
+        uploadInternal(context, fileName, data);
+        //
+        context.sendResponse(new ChatResonseMessage("_file-upload", StringUtil.getUUID(),
+                new ObjectMapper().writeValueAsString(agentFile)));
+        //
+        addFile(context, agentFile);
+        //
+        return agentFile;
+
     }
 
     @Override
