@@ -19,26 +19,55 @@ OrcheTeam 是一个企业级智能代理（Agent）管理平台，采用模块�
 
 
 
-## 快速安装
-
-容器化安装后续提供，源代码构建参考开发者手册。
-
-### 环境准备
+## 安装
+### 快速安装
+#### 环境准备
 - 安装 MongoDB 最新版本
 - 安装 Java 24 或更新版本
 
-### 安装步骤
-1. 下载安装包：https://github.com/jamie-mttk/orche-team-code/blob/master/release/OrcheTeam.zip (点击 download raw file 下载)
-2. 解压 zip 到任意目录，假定为 `c:\orcheTeam`
-3. 修改配置：
-   - `c:\orcheTeam\conf\mongo.properties` 修改 mongodb 配置（如果 mongodb 在本地且无需认证可不修改）
-   - `c:\orcheTeam\bin\server.bat` (Linux 下为 `server.sh`) 修改 JAVA_HOME（如果环境变量里有则无需设置）
+#### 安装步骤
+1. 在任意目录下下载安装包：
 
-## 启动运行
+ - 国外github下载命令: git clone https://github.com/jamie-mttk/orche-team
 
-运行 `c:\orcheTeam\bin\startup.bat` (Linux 下为 `startup.sh`)，第一次启动较慢，系统需要做一些初始化。
+ - 国内Gitee下载命令: git clone https://gitee.com/jamie0828/orche-team
+
+2. 修改配置：
+- `d:\orche-team\conf\mongo.properties` 修改 mongodb 配置（如果 mongodb 在本地且无需认证可不修改）
+- `d:\orche-team\bin\server.bat` (Linux 下为 `server.sh`) 修改 JAVA_HOME（如果环境变量里有则无需设置）
+
+#### 启动运行
+
+运行 
+```
+cd  d:\orche-team\bin\
+startup.bat 
+```
+
+(Linux 下为 `startup.sh`)，第一次启动较慢，系统需要做一些初始化。
 
 启动完成后，使用浏览器打开 http://localhost:7474 访问系统。
+
+### Docker安装
+1. 在任意目录下下载安装包：
+
+- 国外github下载命令: git clone https://github.com/jamie-mttk/orche-team
+- 国内Gitee下载命令: git clone https://gitee.com/jamie0828/orche-team
+
+2. 进入orche-team目录
+```
+cd  orche-team
+```
+3. build docker
+```
+docker build -t orcheteam .
+```
+4.启动 Docker
+```
+docker run -d   -p 7474:7474      -v orcheteam_db:/data/db  --name orcheteam   orcheteam
+```
+5.访问
+用浏览器打开 http://localhost:7474 访问系统。
 
 
 ## 快速开始
