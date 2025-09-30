@@ -1,7 +1,7 @@
 package com.mttk.orche.addon.agent.impl;
 
 import java.util.Arrays;
-import java.util.Collection;
+
 import java.util.List;
 
 import com.mttk.orche.addon.AdapterConfig;
