@@ -28,7 +28,7 @@ import com.mttk.orche.util.ThrowableUtil;
 @Control(key = "dummy", label = "操作", mode = "dummy", size = -1)
 @Control(key = "setPlanAgent", label = "先规划后执行", description = "根据用户需求规划任务然后逐步执行;有异常会重新规划任务", mode = "button", size = -1, props = {
                 "type:primary", "url:/util/forward", "target:agent._react-agent" })
-@Control(key = "setNormalAgent", label = "边规划后执行", description = "根据用户需求执行,执行完成后规划下一步", mode = "button", size = -1, props = {
+@Control(key = "setNormalAgent", label = "边规划边执行", description = "根据用户需求执行,执行完成后规划下一步", mode = "button", size = -1, props = {
                 "type:success", "url:/util/forward", "target:agent._react-agent" })
 // 还有一个复杂方法时定义一个editor用户输入本操作需要的提示词如genPrompt,使用一个变量如showGenPromop控制是否显示.本按钮设置showGenPromop=true
 // 显示genPrompt后还显示生成和取消两个按钮

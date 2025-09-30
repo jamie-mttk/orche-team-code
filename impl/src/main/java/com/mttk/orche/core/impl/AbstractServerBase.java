@@ -26,7 +26,7 @@ public abstract class AbstractServerBase extends AbstractPersistWithListenerServ
 	// 初始化
 	protected void init(String homePath) throws Exception {
 		settings.put(Server.TIME_START, new Date());
-		settings.put(Server.VERSION, "5.8.04");
+		settings.put(Server.VERSION, "0.1.0");
 		//
 		settings.put(Server.PATH_HOME, homePath);
 		settings.put(Server.PATH_TEMP, homePath + File.separator + "temp");
@@ -48,9 +48,9 @@ public abstract class AbstractServerBase extends AbstractPersistWithListenerServ
 		settings.put(Server.INSTANCE_ID, instanceId);
 		//
 		saveInstanceIdLast(instanceId);
-//		//测试生成不同的temp
-//		logger.info("@@@@@@@@@:"+
-//		homePath+File.separator+"temp"+File.separator+instanceId);
+		// //测试生成不同的temp
+		// logger.info("@@@@@@@@@:"+
+		// homePath+File.separator+"temp"+File.separator+instanceId);
 
 		// instance name
 		// System.out.println("@@@@@@"+NetworkUtil.getHostName());
@@ -101,12 +101,12 @@ public abstract class AbstractServerBase extends AbstractPersistWithListenerServ
 
 	private void saveInstanceIdLast(String instanceIdLast) throws IOException {
 		File file = getInstanceIdLastFile();
-		try {		
+		try {
 			FileHelper.createDir(file.getParentFile());
 			FileHelper.writeFile(instanceIdLast.getBytes("UTF-8"), file, false);
 		} catch (Exception e) {
-			//出错了不报错,防止启动失败
-			logger.error("Fail to save instance id last to "+file, e);
+			// 出错了不报错,防止启动失败
+			logger.error("Fail to save instance id last to " + file, e);
 		}
 	}
 
