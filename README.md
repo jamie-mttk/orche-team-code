@@ -18,7 +18,7 @@ OrcheTeam 是一个企业级智能代理（Agent）管理平台，采用模块�
 
 ### 屏幕截图
 
-![模型配置](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/model.png)
+![模型配置](./screenCaptures/model.png)
 ![网络搜索智能体](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/webSearch_agent.png)
 ![ReAct智能体](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/ReAct_agent.png)
 ![执行界面1](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_1.png)
