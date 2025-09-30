@@ -19,15 +19,15 @@ OrcheTeam 是一个企业级智能代理（Agent）管理平台，采用模块�
 ### 屏幕截图
 
 ![模型配置](./screenCaptures/model.png)
-![网络搜索智能体](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/webSearch_agent.png)
-![ReAct智能体](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/ReAct_agent.png)
-![执行界面1](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_1.png)
-![执行界面2](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_2.png)
-![执行界面3](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_3.png)
-![执行界面4](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_4.png)
-![执行界面5](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_5.png)
-![执行界面6](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/execute_6.png)
-![任务管理](https://github.com/jamie-mttk/orche-team/blob/main/screenCaptures/task.png)
+![网络搜索智能体](./screenCaptures/webSearch_agent.png)
+![ReAct智能体](./screenCaptures/ReAct_agent.png)
+![执行界面1](./screenCaptures/execute_1.png)
+![执行界面2](./screenCaptures/execute_2.png)
+![执行界面3](./screenCaptures/execute_3.png)
+![执行界面4](./screenCaptures/execute_4.png)
+![执行界面5](./screenCaptures/execute_5.png)
+![执行界面6](./screenCaptures/execute_6.png)
+![任务管理](./screenCaptures/task.png)
 
 
 
