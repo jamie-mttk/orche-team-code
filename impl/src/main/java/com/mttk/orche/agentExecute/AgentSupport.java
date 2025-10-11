@@ -146,7 +146,8 @@ class AgentSupport {
             //
             File fileToLoad = new File(uploadPath, id);
             byte[] content = FileHelper.readFile(fileToLoad);
-            fileToLoad.delete();
+            //不删除,这样可以重复利用
+            fileToLoad.deleteOnExit();
             AgentFile agentFile = AgentUtil.getAgentFileService(context).upload(context, file.getString("name"),
                     file.getString("description"), content);
             agentFiles.add(agentFile);

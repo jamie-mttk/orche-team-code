@@ -12,7 +12,7 @@ import com.mttk.orche.addon.agent.MessageRole;
 import com.mttk.orche.addon.agent.impl.AgentRunnerSupport.AgentParam;
 import com.mttk.orche.util.StringUtil;
 
-public abstract class BaseReactAgent extends AbstractAgent {
+public abstract class BaseReactAgent extends ToolDefineReadyAgent {
     // private static final Logger logger =
     // LoggerFactory.getLogger(BaseReactAgent.class);
 

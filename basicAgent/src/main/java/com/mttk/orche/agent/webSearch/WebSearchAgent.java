@@ -14,7 +14,7 @@ import com.mttk.orche.service.support.AgentFile;
 @AgentTemplateFlag(key = "_web-search", name = "互联网搜索", description = """
                 互联网搜索工具,用于搜索互联网知识并汇总成markdown文件.仅支持单一查询任务,含义独立的查询需求请多次本调用工具.禁止用于其他运算或批量查询.
                 """, i18n = "/com/mttk/api/addon/basic/i18n")
-@Control(key = "maxLoop", label = "最大循环次数", description = "当一次搜索汇总后评估不满足需求,则会再次启动查询.本数量定义了最大查询次数.", size = 1, defaultVal = "3", props = {
+@Control(key = "maxLoop", label = "最大循环次数", description = "当一次搜索汇总后评估不满足需求,则会再次启动查询.本数量定义了最大查询次数.", size = 1, defaultVal = "2", props = {
                 "dataType:number" })
 @Control(key = "keywordNum", label = "关键字数量", description = "根据查询请求生成的关键字数量.", size = 1, defaultVal = "5", props = {
                 "dataType:number" })

@@ -112,20 +112,26 @@ public class AgentUtil {
             // logger.info("CALLING tools..." + toolCall);
             // AgentTool agentTool = new
             // AgentToolManager(context).getByName(toolCall.getFunctionName());
-            String[] parts = ToolDefineUtil.partToolName(toolCall.getFunctionName());
-            // System.out.println("$$$$$$$ 1:" + toolCall.getFunctionName());
-            // System.out.println("$$$$$$$ 2:" + parts[0] + "!!!!!!!!!!!!!!!!!!!" +
-            // parts[1]);
-            String result = context.execute(parts[0], parts[1], toolCall.getArguments());
-            // Object result = agentTool.execute(toolCall.getParsedArguments());
-            if (result == null) {
-                result = "";
-            }
+            String result = handleTool(context, toolCall, chatMemory);
             if (chatMemory != null) {
                 chatMemory.addMessage(ChatMessage.tool(result, toolCall.getId()));
             }
             // }
         }
+    }
+
+    public static String handleTool(AgentContext context, ToolCall toolCall, ChatMemory chatMemory) throws Exception {
+        String[] parts = ToolDefineUtil.partToolName(toolCall.getFunctionName());
+        // System.out.println("$$$$$$$ 1:" + toolCall.getFunctionName());
+        // System.out.println("$$$$$$$ 2:" + parts[0] + "!!!!!!!!!!!!!!!!!!!" +
+        // parts[1]);
+        String result = context.execute(parts[0], parts[1], toolCall.getArguments());
+        // Object result = agentTool.execute(toolCall.getParsedArguments());
+        if (result == null) {
+            result = "";
+        }
+        //
+        return result;
     }
 
     public static ChatResonseMessage handleErrorChatResonse(AgentContext context, String transactionId, Throwable t) {

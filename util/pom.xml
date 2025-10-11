@@ -22,6 +22,14 @@
           <artifactId>slf4j-api</artifactId>
           <version>2.0.12</version>
         </dependency>
+
+        <!-- 文件编码检测库 -->
+        <dependency>
+          <groupId>com.github.albfernandez</groupId>
+          <artifactId>juniversalchardet</artifactId>
+          <version>2.4.0</version>
+          <scope>test</scope>
+        </dependency>
   </dependencies>
   <build>
     <plugins>

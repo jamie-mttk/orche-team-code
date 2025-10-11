@@ -16,6 +16,7 @@ import com.mttk.orche.addon.annotation.ui.Control;
 import com.mttk.orche.addon.annotation.ui.Table;
 import com.mttk.orche.core.impl.AdapterConfigImpl;
 import com.mttk.orche.service.support.AgentFile;
+import com.mttk.orche.support.JsonUtil;
 import com.mttk.orche.util.ThrowableUtil;
 
 @AgentTemplateFlag(key = "_sql-query", name = "数据库查询", description = """
@@ -27,6 +28,8 @@ import com.mttk.orche.util.ThrowableUtil;
 @Control(key = "jdbcPassword", label = "JDBC密码", size = 2, mandatory = true, props = "type:password")
 @Control(key = "jdbcReadonly", label = "只读访问", description = "只读访问数据库,不进行写操作\n建议打开防止对于数据库的误操作", mode = "checkbox", size = 1, defaultVal = "true")
 @Control(key = "model", label = "模型", mode = "select", size = 1, mandatory = true, props = { "url:llmModel/query" })
+@Control(key = "basePrompt", label = "基础提示词", description = "此提示词加上表信息后生成系统提示词\n请谨慎修改,特别是输出格式部分", mandatory = true, size = 1, defaultVal = Prompt.SYSTEM_PROMPT, mode = "editor", props = {
+                "language:markdown", "height:240" })
 @Control(key = "systemPrompt", label = "系统提示词", mandatory = true, size = 1, defaultVal = Prompt.SYSTEM_PROMPT, mode = "editor", props = {
                 "language:markdown", "height:480" })
 @Control(key = "tableFilter", label = "表过滤", description = "输入后点击按钮增加表得表列表\n支持使用schema.table的形式过滤\n支持使用*(代表多个字符)模糊匹配", size = 2)
@@ -61,13 +64,22 @@ public class SqlQueryAgent extends AbstractAgent implements RequestTarget {
                                 null);
                 //
                 // getAgentContext().getMemory().addMessage(message);
+
+                // 解析返回的JSON
+                String cleanedJson = JsonUtil.cleanJsonString(message.getContent());
+                Document jsonResult = Document.parse(cleanedJson);
+                String sql = jsonResult.getString("sql");
+                String explanation = jsonResult.getString("explanation");
+
                 //
-                SqlQueryUtil.QueryResult queryResult = SqlQueryUtil.executeQueryToCsv(message.getContent(), config);
+                SqlQueryUtil.QueryResult queryResult = SqlQueryUtil.executeQueryToCsv(sql, config);
                 // 生成描述
                 StringBuilder sb1 = new StringBuilder(1024);
-                sb1.append("**查询请求**: ").append(query).append("\n");
-                sb1.append("**表头**: ").append(queryResult.getHeader()).append("\n");
-                sb1.append("**数据行数**: ").append(queryResult.getCount()).append("\n");
+                sb1.append("**查询请求**:\n").append(query).append("\n");
+                sb1.append("**生成SQL**:\n").append(sql).append("\n");
+                sb1.append("**SQL说明**:\n").append(explanation).append("\n");
+                sb1.append("**表头**:\n").append(queryResult.getHeader()).append("\n");
+                sb1.append("**数据行数**:\n").append(queryResult.getCount()).append("\n");
                 String description = sb1.toString();
                 //
                 AgentFile agentFile = AgentUtil.getAgentFileService(context).upload(context, query + "的数据库查询结果.csv",

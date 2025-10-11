@@ -15,9 +15,9 @@ public class FileHelper {
 	 * Clear all the files under the given folder
 	 * 
 	 * @param folder
-	 *            The folder to clear
+	 *                  The folder to clear
 	 * @param subFolder
-	 *            if true,delete subFolder;otherwise,only files are cleard
+	 *                  if true,delete subFolder;otherwise,only files are cleard
 	 * @throws IOException
 	 */
 	public static void clearDir(String dir, boolean subFolder)
@@ -47,38 +47,38 @@ public class FileHelper {
 	 * is encoding sensitive
 	 * 
 	 * @param file
-	 *            the file name to read from
+	 *             the file name to read from
 	 */
 	public static byte[] readFile(File file) throws IOException {
-		Long size=file.length();
-		ByteArrayOutputStream os=new ByteArrayOutputStream(size.intValue());
+		Long size = file.length();
+		ByteArrayOutputStream os = new ByteArrayOutputStream(size.intValue());
 		//
 		int len;
 		byte[] bytes = new byte[1024];
-		try(FileInputStream is = new FileInputStream(file)){
-			while ((len = is.read(bytes))>0) {
-					os.write(bytes, 0, len);
+		try (FileInputStream is = new FileInputStream(file)) {
+			while ((len = is.read(bytes)) > 0) {
+				os.write(bytes, 0, len);
 			}
 			//
 			return os.toByteArray();
-		}		
+		}
 	}
 
 	/**
 	 * Write byte array into file
 	 * 
 	 * @param bytes
-	 *            byte array which will be written to file
+	 *                 byte array which will be written to file
 	 * @param fileName
-	 *            File name to store the byte array
+	 *                 File name to store the byte array
 	 * @param append
-	 *            true,will append the file if it's exist;false,override. If
-	 *            file is not exist,create a new one(Ignore isOverride).
+	 *                 true,will append the file if it's exist;false,override. If
+	 *                 file is not exist,create a new one(Ignore isOverride).
 	 */
 	public static void writeFile(byte[] bytes, File file, boolean append)
 			throws IOException {
 		//
-		//createDir(file.getParent()); // Create folder if needed
+		// createDir(file.getParent()); // Create folder if needed
 		FileOutputStream fos = new FileOutputStream(file, append);
 		//
 		try {
@@ -99,9 +99,9 @@ public class FileHelper {
 	 * Write byte array into file
 	 * 
 	 * @param bytes
-	 *            byte array which will be written to file
+	 *                 byte array which will be written to file
 	 * @param fileName
-	 *            File name to store the byte array
+	 *                 File name to store the byte array
 	 */
 	private static void writeFile(byte[] bytes, File file) throws IOException {
 		writeFile(bytes, file, false);
@@ -173,43 +173,45 @@ public class FileHelper {
 
 	/**
 	 * Create directory cascade
+	 * 
 	 * @param file
 	 * @return
-	 * true  - create successfully
-	 * false - not created
+	 *         true - create successfully
+	 *         false - not created
 	 */
 	public static boolean createDir(File file) {
-		return createDir(file,100);
+		return createDir(file, 100);
 	}
-	//加入maxLevel防止无限死循环
-	//linux下目录不存在好像会死循环，不过没有模拟出来
-	private static boolean createDir(File file,int maxLevel) {
-		if (file==null){
-			//null, no need to create
+
+	// 加入maxLevel防止无限死循环
+	// linux下目录不存在好像会死循环，不过没有模拟出来
+	private static boolean createDir(File file, int maxLevel) {
+		if (file == null) {
+			// null, no need to create
 			return true;
 		}
-		if(maxLevel<=0) {
+		if (maxLevel <= 0) {
 			return false;
 		}
-		if (file.exists()){
-			//Already exist, return directly
+		if (file.exists()) {
+			// Already exist, return directly
 			return true;
 		}
-		File fileParent=file.getParentFile();
-		if (fileParent==null){
-			//No parent,that means it is already the root folder 
+		File fileParent = file.getParentFile();
+		if (fileParent == null) {
+			// No parent,that means it is already the root folder
 			return true;
 		}
-	
-		if (!fileParent.exists()){
-			if (!createDir(fileParent,maxLevel-1)){
-				//Changed by Jamie @2019/02/02
-				//父亲目录不能创建有可能是并发引起的，因此继续创建子目录而不是退出
-				//return false;
+
+		if (!fileParent.exists()) {
+			if (!createDir(fileParent, maxLevel - 1)) {
+				// Changed by Jamie @2019/02/02
+				// 父亲目录不能创建有可能是并发引起的，因此继续创建子目录而不是退出
+				// return false;
 			}
 		}
-		//Create last level
-		return file.mkdir();		
+		// Create last level
+		return file.mkdir();
 	}
 
 	/**
@@ -227,4 +229,3 @@ public class FileHelper {
 	 */
 
 }
-

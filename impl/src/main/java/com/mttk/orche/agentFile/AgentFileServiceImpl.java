@@ -58,8 +58,8 @@ public class AgentFileServiceImpl extends AbstractService implements AgentFileSe
         if (data == null || data.length == 0) {
             throw new Exception("Data is empty for file:" + fileName);
         }
-        // 移除文件名中不允许的特殊字符
-        fileName = removeSpecialChars(fileName);
+        // 规范化文件名
+        fileName = normorizeFileName(fileName);
         // 检查文件是否已存在
         AgentFile existingFile = get(context, fileName);
         if (existingFile != null) {
@@ -152,24 +152,52 @@ public class AgentFileServiceImpl extends AbstractService implements AgentFileSe
                 sessionId).orElse(null);
     }
 
-    // 移除文件名中不允许的特殊字符
-    private String removeSpecialChars(String input) {
+    // 规范化文件名：移除特殊字符、空格替换为下划线、限制长度
+    private String normorizeFileName(String input) {
         if (StringUtil.isEmpty(input)) {
             return "";
         }
-        // 定义需要过滤的特殊字符集合
-        String specialChars = " \"&$@=;:+?,\\{^}%~[]<>#|'\n\r*";
+        // 定义需要过滤的特殊字符集合（不包括空格，空格单独处理）
+        String specialChars = "\"&$@=;:+?,\\{^}%~[]<>#|'\n\r*";
         Set<Character> specialCharsSet = new HashSet<>();
         for (char c : specialChars.toCharArray()) {
-            // System.out.println("@@" + c);
             specialCharsSet.add(c);
         }
+
+        // 第一步：过滤特殊字符，空格替换为下划线
         StringBuilder result = new StringBuilder();
         for (char c : input.toCharArray()) {
-            if (!specialCharsSet.contains(c)) {
+            if (c == ' ') {
+                result.append('_');
+            } else if (!specialCharsSet.contains(c)) {
                 result.append(c);
             }
         }
-        return result.toString();
+
+        String normalized = result.toString();
+
+        // 第二步：如果长度超过32，保留扩展名并截取
+        if (normalized.length() > 32) {
+            int lastDotIndex = normalized.lastIndexOf('.');
+            if (lastDotIndex > 0 && lastDotIndex < normalized.length() - 1) {
+                // 有扩展名
+                String extension = normalized.substring(lastDotIndex);
+                String nameWithoutExt = normalized.substring(0, lastDotIndex);
+                // 计算主文件名可以保留的长度
+                int maxNameLength = 32 - extension.length();
+                if (maxNameLength > 0) {
+                    normalized = nameWithoutExt.substring(0, Math.min(nameWithoutExt.length(), maxNameLength))
+                            + extension;
+                } else {
+                    // 扩展名太长，直接截取到32
+                    normalized = normalized.substring(0, 32);
+                }
+            } else {
+                // 没有扩展名，直接截取
+                normalized = normalized.substring(0, 32);
+            }
+        }
+
+        return normalized;
     }
 }

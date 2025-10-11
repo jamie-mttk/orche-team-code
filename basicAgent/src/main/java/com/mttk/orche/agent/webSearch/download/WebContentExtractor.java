@@ -14,11 +14,15 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WebContentExtractor {
 
@@ -68,7 +72,7 @@ public class WebContentExtractor {
             // 创建HTTP客户端，使用信任所有证书的SSL上下文
             HttpClient client = HttpClient.newBuilder()
                     .followRedirects(HttpClient.Redirect.NORMAL)
-                    .connectTimeout(java.time.Duration.ofSeconds(15))
+                    .connectTimeout(java.time.Duration.ofSeconds(10))
                     .sslContext(createTrustAllSSLContext())
                     .build();
 
@@ -80,11 +84,9 @@ public class WebContentExtractor {
                     .GET()
                     .build();
 
-            // 发送请求
-            // HttpResponse<String> response = client.send(request,
-            // BodyHandlers.ofString());
-            CompletableFuture<HttpResponse<String>> future = client.sendAsync(request, BodyHandlers.ofString());
-            HttpResponse<String> response = future.get(15, TimeUnit.SECONDS);
+            // 发送请求，获取字节数组以便正确处理编码
+            CompletableFuture<HttpResponse<byte[]>> future = client.sendAsync(request, BodyHandlers.ofByteArray());
+            HttpResponse<byte[]> response = future.get(15, TimeUnit.SECONDS);
             // 检查响应状态
             int statusCode = response.statusCode();
             if (statusCode != 200) {
@@ -98,8 +100,15 @@ public class WebContentExtractor {
                 return "";
             }
 
+            // 检测编码
+            String charset = detectCharset(response);
+            // charset = "big5";
+            // System.out.println("编码: " + charset);
+            // 使用正确的编码解码内容
+            String htmlContent = decodeContent(response.body(), charset);
+
             // 使用JSoup提取纯文本
-            return parseContent(response.body());
+            return parseContent(htmlContent);
 
         } catch (Exception e) {
             // 包装异常并添加上下文信息
@@ -157,7 +166,79 @@ public class WebContentExtractor {
             "application/xml",
             "application/octet-stream");
 
-    private static boolean isAllowedContentType(HttpResponse<String> response) {
+    /**
+     * 从响应头和HTML内容中检测字符编码
+     * 
+     * @param response HTTP响应
+     * @return 检测到的字符集名称，默认为UTF-8
+     */
+    private static String detectCharset(HttpResponse<byte[]> response) {
+        // 1. 优先从Content-Type响应头获取charset
+        Optional<String> contentTypeHeader = response.headers().firstValue("Content-Type");
+        if (contentTypeHeader.isPresent()) {
+            String contentType = contentTypeHeader.get();
+            Pattern charsetPattern = Pattern.compile("charset\\s*=\\s*([^;\\s]+)", Pattern.CASE_INSENSITIVE);
+            Matcher matcher = charsetPattern.matcher(contentType);
+            if (matcher.find()) {
+                String charset = matcher.group(1).replace("\"", "").replace("'", "").trim();
+                if (Charset.isSupported(charset)) {
+                    return charset;
+                }
+            }
+        }
+
+        // 2. 从HTML的meta标签中提取charset
+        // 只扫描前2048字节以提高性能
+        byte[] bodyBytes = response.body();
+        int scanLength = Math.min(2048, bodyBytes.length);
+        String preview = new String(bodyBytes, 0, scanLength, StandardCharsets.ISO_8859_1);
+
+        // 匹配 <meta charset="xxx">
+        Pattern metaCharsetPattern = Pattern.compile(
+                "<meta\\s+charset\\s*=\\s*[\"']?([^\"'\\s>]+)",
+                Pattern.CASE_INSENSITIVE);
+        Matcher matcher = metaCharsetPattern.matcher(preview);
+        if (matcher.find()) {
+            String charset = matcher.group(1).trim();
+            if (Charset.isSupported(charset)) {
+                return charset;
+            }
+        }
+
+        // 匹配 <meta http-equiv="Content-Type" content="text/html; charset=xxx">
+        Pattern metaHttpEquivPattern = Pattern.compile(
+                "<meta\\s+http-equiv\\s*=\\s*[\"']?Content-Type[\"']?\\s+content\\s*=\\s*[\"']?[^\"'>]*charset\\s*=\\s*([^\"';\\s>]+)",
+                Pattern.CASE_INSENSITIVE);
+        matcher = metaHttpEquivPattern.matcher(preview);
+        if (matcher.find()) {
+            String charset = matcher.group(1).trim();
+            if (Charset.isSupported(charset)) {
+                return charset;
+            }
+        }
+
+        // 3. 默认使用UTF-8
+        return "UTF-8";
+    }
+
+    /**
+     * 使用指定的字符集解码字节数组
+     * 
+     * @param bytes       字节数组
+     * @param charsetName 字符集名称
+     * @return 解码后的字符串
+     */
+    private static String decodeContent(byte[] bytes, String charsetName) {
+        try {
+            Charset charset = Charset.forName(charsetName);
+            return new String(bytes, charset);
+        } catch (Exception e) {
+            // 如果指定的编码不支持，回退到UTF-8
+            return new String(bytes, StandardCharsets.UTF_8);
+        }
+    }
+
+    private static boolean isAllowedContentType(HttpResponse<byte[]> response) {
         // 从响应中获取 Content-Type 头部
         Optional<String> contentTypeHeader = response.headers().firstValue("Content-Type");
 

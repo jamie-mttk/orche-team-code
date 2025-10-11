@@ -68,22 +68,22 @@ public class EmailSendAgent extends AbstractAgent {
         if (StringUtil.isEmpty(cc)) {
             cc = config.getString("cc");
         }
-        try {
-            // 发送邮件
-            sendEmail(context, config, subject, content, attachmentsStr, to, cc);
-            //
-            String result = "邮件发送成功: 收件人=" + to + ", 主题="
-                    + subject + ",附件数量=" + (attachmentsStr != null ? attachmentsStr.split(",").length : 0);
-            // context.sendResponse(new ChatResonseMessage("_data-content", transactionId,
-            // result));
+        // try {
+        // 发送邮件
+        sendEmail(context, config, subject, content, attachmentsStr, to, cc);
+        //
+        String result = "邮件发送成功: 收件人=" + to + ", 主题="
+                + subject + ",附件数量=" + (attachmentsStr != null ? attachmentsStr.split(",").length : 0);
+        // context.sendResponse(new ChatResonseMessage("_data-content", transactionId,
+        // result));
 
-            return result;
+        return result;
 
-        } catch (Exception e) {
+        // } catch (Exception e) {
 
-            context.sendResponse(new ChatResonseMessage("_agent-end", transactionId));
-            throw new RuntimeException("邮件发送失败: " + e.getMessage(), e);
-        }
+        // context.sendResponse(new ChatResonseMessage("_agent-end", transactionId));
+        // throw new RuntimeException("邮件发送失败: " + e.getMessage(), e);
+        // }
     }
 
     /**

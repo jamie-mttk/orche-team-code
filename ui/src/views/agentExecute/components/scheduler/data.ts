@@ -1,4 +1,45 @@
 import ScheduleTypeChooser from './ScheduleTypeChooser.vue'
+import moment from 'moment'
+
+const shortcuts = [
+    {
+        text: '现在',
+        value: () => moment().toDate(),
+    },
+    {
+        text: '1分钟后',
+        value: () => moment().add(1, 'minute').toDate(),
+    },
+    {
+        text: '5分钟后',
+        value: () => moment().add(5, 'minutes').toDate(),
+    },
+    {
+        text: '一小时后',
+        value: () => moment().add(1, 'hour').toDate(),
+    },
+    {
+        text: '二小时后',
+        value: () => moment().add(2, 'hours').toDate(),
+    },
+    {
+        text: '明天凌晨0点',
+        value: () => moment().add(1, 'day').startOf('day').toDate(),
+    },
+    {
+        text: '明天凌晨2点',
+        value: () => moment().add(1, 'day').startOf('day').add(2, 'hours').toDate(),
+    },
+    {
+        text: '后天凌晨0点',
+        value: () => moment().add(2, 'days').startOf('day').toDate(),
+    },
+    {
+        text: '后天凌晨2点',
+        value: () => moment().add(2, 'days').startOf('day').add(2, 'hours').toDate(),
+    },
+]
+
 export const scheduleConfig = {
     props: {
         labelWidth: '120px'
@@ -20,7 +61,10 @@ export const scheduleConfig = {
             label: '执行时间',
             mandatory: true,
             size: 1,
-            props: {},
+            props: {
+                readonly: true,
+                shortcuts: shortcuts
+            },
             bindings: {
                 show: "this.data.mode=='FIXED'"
             }

@@ -6,8 +6,9 @@
       style="width:100%"></el-time-picker>
     <!-- :default-value="defaultTime" -->
     <el-date-picker v-if="!isTimePicker" v-model="modelValue" :placeholder="placeholder" :disabled="isDisabled"
-      size="small" :type="pickerType" :pickerOptions="pickerOptions" start-placeholder="开始日期" end-placeholder="结束日期"
-      range-separator="至" :value-format="valueFormat" :format="valueFormat" style="width:100%"></el-date-picker>
+      size="small" :type="pickerType" :pickerOptions="pickerOptions" :shortcuts="shortcuts" start-placeholder="开始日期"
+      end-placeholder="结束日期" range-separator="至" :value-format="valueFormat" :format="valueFormat"
+      style="width:100%"></el-date-picker>
     <!-- :default-time="defaultTime" -->
   </CdBase>
 </template>
@@ -41,6 +42,9 @@ const valueFormat = computed(() => {
 
 const pickerOptions = computed(() => {
   return getPropSafe('pickerOptions') || {}
+})
+const shortcuts = computed(() => {
+  return getPropSafe('shortcuts') || []
 })
 // const defaultTime = computed(() => {
 //   return getPropSafe('defaultTime') || '00:00:00'

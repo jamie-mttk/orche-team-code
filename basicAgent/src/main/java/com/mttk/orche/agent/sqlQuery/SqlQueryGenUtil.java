@@ -15,7 +15,7 @@ public class SqlQueryGenUtil {
             Document data) throws Exception {
         //
         StringBuilder sb = new StringBuilder(2048);
-        sb.append(Prompt.SYSTEM_PROMPT);
+        sb.append(config.getString("basePrompt", Prompt.SYSTEM_PROMPT));
         try (Connection conn = SqlQueryUtil.getConnection(data)) {
             // 数据库基本信息
             genDatabaseInfo(conn, sb);

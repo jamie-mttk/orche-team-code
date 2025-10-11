@@ -4,93 +4,51 @@
       <h2>{{ isEdit ? '修改模型' : '新增模型' }}</h2>
       <el-button @click="$emit('back')">返回列表</el-button>
     </div>
-    
-    <el-form
-      ref="formRef"
-      :model="formData"
-      :rules="formRules"
-      label-width="120px"
-      class="model-form"
-    >
+
+    <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px" class="model-form">
       <el-form-item label="模型名称" prop="name">
-        <el-input 
-          v-model="formData.name" 
-          placeholder="请输入模型名称"
-          :disabled="submitting"
-        />
+        <el-input v-model="formData.name" placeholder="请输入模型名称" :disabled="submitting" />
       </el-form-item>
-      
+
       <el-form-item label="模型描述" prop="description">
-        <el-input
-          v-model="formData.description"
-          type="textarea"
-          :rows="3"
-          placeholder="请输入模型描述"
-          :disabled="submitting"
-        />
+        <el-input v-model="formData.description" type="textarea" :rows="3" placeholder="请输入模型描述"
+          :disabled="submitting" />
       </el-form-item>
-      
+
       <el-form-item label="API基础URL" prop="apiBaseUrl">
-        <el-input
-          v-model="formData.apiBaseUrl"
+        <el-input v-model="formData.apiBaseUrl"
           placeholder="请输入API基础URL，如：https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
-          :disabled="submitting"
-        />
+          :disabled="submitting" />
       </el-form-item>
-      
+
       <el-form-item label="API密钥" prop="apiKey">
-        <el-input
-          v-model="formData.apiKey"
-          type="password"
-          placeholder="请输入API密钥"
-          :disabled="submitting"
-          show-password
-        />
+        <el-input v-model="formData.apiKey" type="password" placeholder="请输入API密钥" :disabled="submitting"
+          show-password />
       </el-form-item>
-      
+
       <el-form-item label="模型名称" prop="modelName">
-        <el-input
-          v-model="formData.modelName"
-          placeholder="请输入模型名称，如：qwen-plus-2025-07-28"
-          :disabled="submitting"
-        />
+        <el-input v-model="formData.modelName" placeholder="请输入模型名称，如：qwen-plus-2025-07-28" :disabled="submitting" />
       </el-form-item>
-      
+
       <el-form-item label="最大Token数" prop="maxTokens">
-        <el-input-number
-          v-model="formData.maxTokens"
-          :min="1"
-          :max="1000000"
-          :step="1000"
-          placeholder="请输入最大Token数"
-          :disabled="submitting"
-          style="width: 100%"
-        />
+        <el-input-number v-model="maxTokensInK" :min="1" :max="976" :step="1" placeholder="请输入最大Token数（K）"
+          :disabled="submitting" style="width: 100%" />
+        <div class="slider-description">
+          <span class="description-text">以K为单位（1K = 1024 Token），实际值：{{ (formData.maxTokens ?? 0).toLocaleString()
+          }}</span>
+        </div>
       </el-form-item>
-      
+
       <el-form-item label="温度参数" prop="temperature">
-        <el-slider
-          v-model="formData.temperature"
-          :min="0"
-          :max="2"
-          :step="0.1"
-          :disabled="submitting"
-          show-input
-          input-size="large"
-          :format-tooltip="(val: number) => val.toFixed(1)"
-        />
+        <el-slider v-model="formData.temperature" :min="0" :max="2" :step="0.1" :disabled="submitting" show-input
+          input-size="large" :format-tooltip="(val: number) => val.toFixed(1)" />
         <div class="slider-description">
           <span class="description-text">0.0: 确定性输出，2.0: 创造性输出</span>
         </div>
       </el-form-item>
-      
+
       <el-form-item>
-        <el-button 
-          type="primary" 
-          @click="handleSubmit" 
-          :loading="submitting" 
-          size="large"
-        >
+        <el-button type="primary" @click="handleSubmit" :loading="submitting" size="large">
           {{ isEdit ? '保存修改' : '新增模型' }}
         </el-button>
         <el-button @click="$emit('back')" size="large" :disabled="submitting">取消</el-button>
@@ -100,8 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ref, watch, computed } from 'vue'
 import type { FormInstance } from 'element-plus'
 
 import type { Model } from '../types'
@@ -132,6 +89,16 @@ const formData = ref<Model>({
   maxTokens: 65536,
   temperature: 0.0,
   _id: undefined
+})
+
+// 以K为单位的最大Token数（计算属性）
+const maxTokensInK = computed({
+  get: () => {
+    return Math.round((formData.value.maxTokens ?? 65536) / 1024)
+  },
+  set: (value: number) => {
+    formData.value.maxTokens = value * 1024
+  }
 })
 
 // 表单验证规则
@@ -181,7 +148,7 @@ watch(() => props.model, (newModel) => {
 // 提交表单
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     emit('submit', formData.value)

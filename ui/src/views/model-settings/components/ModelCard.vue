@@ -67,10 +67,10 @@ const formatDate = (dateStr?: string) => {
   })
 }
 
-// 格式化数字
+// 格式化数字（以1024为单位）
 const formatNumber = (num: number) => {
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K'
+  if (num >= 1024) {
+    return (num / 1024).toFixed(0) + 'K'
   }
   return num.toString()
 }
