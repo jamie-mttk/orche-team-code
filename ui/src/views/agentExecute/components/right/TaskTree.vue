@@ -1,7 +1,10 @@
 <template>
     <div class="task-tree-panel">
         <div class="tree-header">
-            <h3>任务执行流程</h3>
+            <div class="header-left">
+                <h3>任务执行流程</h3>
+                <el-switch v-model="autoSwitchNode" size="small" active-text="树当前节点跟随执行过程" style="margin-left: 12px;" />
+            </div>
             <div class="status-icon">
                 <span class="execution-time" :class="getOverallTimeClass()">
                     {{ getOverallExecutionTime() }}
@@ -15,7 +18,7 @@
 
             <el-tree ref="taskTreeRef" v-else :data="props.agentRuntime?.treeNodes?.value" :props="treeProps"
                 default-expand-all :expand-on-click-node="false" :highlight-current="false"
-                :current-node-key="props.agentRuntime?.selectedNode?.value?.id" @node-click="handleNodeClick"
+                :current-node-key="props.agentRuntime?.getSelectedNodeKey?.value" @node-click="handleNodeClick"
                 class="task-tree" node-key="id">
                 <template #default="{ data }">
                     <div class="tree-node">
@@ -33,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import moment from 'moment'
 import { AgentRuntime, type TreeNode } from '../../support/agentRuntimeSupport';
 import { formatDuaration } from '@/utils/tools';
@@ -44,6 +47,18 @@ interface Props {
 
 
 const props = defineProps<Props>()
+
+// 自动切换节点开关的计算属性
+const autoSwitchNode = computed({
+    get: () => {
+        return props.agentRuntime?.autoSwitchNode?.value ?? true
+    },
+    set: (value: boolean) => {
+        if (props.agentRuntime?.autoSwitchNode) {
+            props.agentRuntime.autoSwitchNode.value = value
+        }
+    }
+})
 
 // 树形结构配置
 const treeProps = {
@@ -180,7 +195,7 @@ const getOverallTimeClass = (): string => {
 // 处理节点点击
 const handleNodeClick = (node: TreeNode) => {
     // emit('nodeClick', node)
-    props.agentRuntime.selectedNode.value = node
+    props.agentRuntime.setSelectedNode(node, true)  //用户手动点击时强制设置
 }
 </script>
 
@@ -200,6 +215,11 @@ const handleNodeClick = (node: TreeNode) => {
     align-items: center;
     padding: 15px 0;
     border-bottom: 1px solid #e4e7ed;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
 }
 
 .tree-header h3 {

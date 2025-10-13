@@ -27,7 +27,7 @@ interface Props {
 
 const props = defineProps<Props>()
 const selectedNode = computed(() => {
-    return props.agentRuntime?.selectedNode?.value
+    return props.agentRuntime?.getSelectedNode()
 })
 // 计算属性
 const selectedNodeData = computed(() => {

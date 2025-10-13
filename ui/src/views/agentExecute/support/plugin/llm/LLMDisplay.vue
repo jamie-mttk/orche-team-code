@@ -4,12 +4,24 @@
             <!-- 使用Tab方式显示请求消息和反馈消息 -->
             <el-tabs v-model="activeTab" class="llm-tabs">
                 <!-- 反馈消息Tab -->
-                <el-tab-pane label="反馈消息" name="feedback">
+                <el-tab-pane name="feedback">
+                    <template #label>
+                        <div class="tab-label">
+                            <span>反馈消息</span>
+                            <CopyButton :content="fullFeedbackContent" />
+                        </div>
+                    </template>
                     <div class="tab-content">
                         <!-- 反馈消息内容 -->
                         <div v-if="llmData.responseContent" class="feedback-content">
                             <el-collapse v-model="feedbackCollapse">
-                                <el-collapse-item title="消息内容" name="content">
+                                <el-collapse-item name="content">
+                                    <template #title>
+                                        <div class="collapse-title">
+                                            <span>消息内容</span>
+                                            <CopyButton :content="llmData.responseContent" />
+                                        </div>
+                                    </template>
                                     <MarkdownViewer :key="`feedback-content-${Date.now()}`"
                                         :value="llmData.responseContent" />
                                 </el-collapse-item>
@@ -19,7 +31,13 @@
                         <!-- 反馈消息推理内容 -->
                         <div v-if="llmData.responseReasoning" class="feedback-reasoning">
                             <el-collapse v-model="feedbackCollapse">
-                                <el-collapse-item title="推理内容" name="reasoning">
+                                <el-collapse-item name="reasoning">
+                                    <template #title>
+                                        <div class="collapse-title">
+                                            <span>推理内容</span>
+                                            <CopyButton :content="llmData.responseReasoning" />
+                                        </div>
+                                    </template>
                                     <MarkdownViewer :key="`feedback-reasoning-${Date.now()}`"
                                         :value="llmData.responseReasoning" />
                                 </el-collapse-item>
@@ -29,13 +47,21 @@
                         <!-- 反馈消息工具调用 -->
                         <div v-if="llmData.toolCalls && llmData.toolCalls.length > 0" class="feedback-tools">
                             <el-collapse v-model="feedbackCollapse">
-                                <el-collapse-item title="工具调用" name="tools">
+                                <el-collapse-item name="tools">
+                                    <template #title>
+                                        <div class="collapse-title">
+                                            <span>工具调用</span>
+                                        </div>
+                                    </template>
                                     <div class="tools-call">
                                         <el-card v-for="(toolCall, index) in llmData.toolCalls" :key="index"
                                             class="tool-call-item" shadow="hover">
                                             <div class="tool-call-header">
                                                 <span class="tool-name">{{ toolCall.function?.name || '未知工具' }}</span>
-                                                <el-tag size="small" type="success">调用</el-tag>
+                                                <div class="header-actions">
+                                                    <el-tag size="small" type="success">调用</el-tag>
+                                                    <CopyButton :content="formatToolCallContent(toolCall)" />
+                                                </div>
                                             </div>
                                             <div class="tool-call-args" v-if="toolCall.function?.arguments">
                                                 <strong>参数:</strong>
@@ -51,12 +77,23 @@
                 </el-tab-pane>
 
                 <!-- 请求信息Tab -->
-                <el-tab-pane label="请求信息" name="request">
+                <el-tab-pane name="request">
+                    <template #label>
+                        <div class="tab-label">
+                            <span>请求信息</span>
+                            <CopyButton :content="fullRequestContent" />
+                        </div>
+                    </template>
                     <div class="tab-content">
                         <!-- 请求消息 -->
                         <div v-if="requestMessages && requestMessages.length > 0" class="request-messages">
                             <el-collapse v-model="requestCollapse">
-                                <el-collapse-item title="请求消息" name="messages">
+                                <el-collapse-item name="messages">
+                                    <template #title>
+                                        <div class="collapse-title">
+                                            <span>请求消息</span>
+                                        </div>
+                                    </template>
                                     <div class="messages-list">
                                         <div v-for="(message, index) in requestMessages" :key="index"
                                             class="message-item">
@@ -64,7 +101,10 @@
                                                 <div class="message-header">
                                                     <span class="message-role">{{ getRoleDisplayName(message.role)
                                                     }}</span>
-                                                    <el-tag size="small" type="primary">{{ index + 1 }}</el-tag>
+                                                    <div class="header-actions">
+                                                        <el-tag size="small" type="primary">{{ index + 1 }}</el-tag>
+                                                        <CopyButton :content="formatMessageContent(message)" />
+                                                    </div>
                                                 </div>
 
                                                 <!-- 消息内容 -->
@@ -90,7 +130,11 @@
                                                             <div class="tool-call-info">
                                                                 <span class="tool-name">{{ toolCall.function?.name
                                                                 }}</span>
-                                                                <el-tag size="small" type="warning">工具</el-tag>
+                                                                <div class="header-actions">
+                                                                    <el-tag size="small" type="warning">工具</el-tag>
+                                                                    <CopyButton
+                                                                        :content="formatToolCallContent(toolCall)" />
+                                                                </div>
                                                             </div>
                                                             <div class="tool-args" v-if="toolCall.function?.arguments">
                                                                 <strong>参数:</strong>
@@ -116,7 +160,10 @@
                                         <el-card v-for="(tool, index) in requestTools" :key="index" class="tool-item"
                                             shadow="hover">
                                             <div class="tool-header">
-                                                <span class="tool-name">{{ tool.function?.name || '未知工具' }}</span>
+                                                <div class="tool-name-group">
+                                                    <span class="tool-name">{{ tool.function?.name || '未知工具' }}</span>
+                                                    <CopyButton :content="formatToolDefinition(tool)" />
+                                                </div>
                                                 <el-tag size="small" type="info">function</el-tag>
                                             </div>
                                             <p class="tool-description">{{ tool.function?.description || '暂无描述' }}</p>
@@ -125,11 +172,11 @@
                                                 <el-descriptions :column="1" size="small">
                                                     <el-descriptions-item
                                                         v-for="(param, key) in tool.function.parameters.properties"
-                                                        :key="key" :label="key">
+                                                        :key="key" :label="String(key)">
 
                                                         {{ param.type }} - {{ param.description }}
                                                         <el-tag
-                                                            v-if="isRequiredParam(key, tool.function.parameters.required)"
+                                                            v-if="isRequiredParam(String(key), tool.function.parameters.required)"
                                                             size="small" type="danger" class="required-tag">必需</el-tag>
                                                     </el-descriptions-item>
                                                 </el-descriptions>
@@ -150,6 +197,7 @@
 import { computed, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import MarkdownViewer from '@/components/mdViewer/index.vue'
+import CopyButton from '../copyButton.vue'
 import type { AgentRuntime } from '../../agentRuntimeSupport'
 
 interface Props {
@@ -239,6 +287,71 @@ const formatArguments = (args: string | undefined): string => {
 const isRequiredParam = (paramKey: string, requiredParams: string[] | undefined): boolean => {
     return requiredParams ? requiredParams.includes(paramKey) : false
 }
+
+// 获取完整的反馈消息内容
+const fullFeedbackContent = computed(() => {
+    const parts: string[] = []
+
+    if (llmData.value.responseContent) {
+        parts.push('## 消息内容\n\n```markdown\n' + llmData.value.responseContent + '\n```')
+    }
+
+    if (llmData.value.responseReasoning) {
+        parts.push('## 推理内容\n\n```markdown\n' + llmData.value.responseReasoning + '\n```')
+    }
+
+    if (llmData.value.toolCalls && llmData.value.toolCalls.length > 0) {
+        const toolCallsStr = llmData.value.toolCalls.map((toolCall: any, index: number) => {
+            return `### 工具调用 ${index + 1}\n\n**工具名称:** ${toolCall.function?.name || '未知工具'}\n\n**参数:**\n\`\`\`json\n${formatArguments(toolCall.function?.arguments)}\n\`\`\``
+        }).join('\n\n')
+        parts.push('## 工具调用\n\n' + toolCallsStr)
+    }
+
+    return parts.join('\n\n')
+})
+
+// 获取完整的请求消息内容
+const fullRequestContent = computed(() => {
+    return llmData.value.requestData || ''
+})
+
+// 格式化工具调用内容
+const formatToolCallContent = (toolCall: any): string => {
+    return `**工具名称:** ${toolCall.function?.name || '未知工具'}\n\n**参数:**\n\`\`\`json\n${formatArguments(toolCall.function?.arguments)}\n\`\`\``
+}
+
+// 格式化消息内容
+const formatMessageContent = (message: any): string => {
+    const parts: string[] = []
+
+    parts.push(`**角色:** ${getRoleDisplayName(message.role)}`)
+
+    if (message.content) {
+        parts.push(`\n**内容:**\n\n${message.content}`)
+    }
+
+    if (message.reasoning_content) {
+        parts.push(`\n**推理内容:**\n\n${message.reasoning_content}`)
+    }
+
+    if (message.tool_calls && message.tool_calls.length > 0) {
+        const toolCallsStr = message.tool_calls.map((toolCall: any, index: number) => {
+            return `**工具 ${index + 1}:** ${toolCall.function?.name}\n\`\`\`json\n${formatArguments(toolCall.function?.arguments)}\n\`\`\``
+        }).join('\n\n')
+        parts.push(`\n**工具调用:**\n\n${toolCallsStr}`)
+    }
+
+    return parts.join('\n')
+}
+
+// 格式化工具定义为JSON
+const formatToolDefinition = (tool: any): string => {
+    try {
+        return JSON.stringify(tool, null, 2)
+    } catch {
+        return JSON.stringify(tool)
+    }
+}
 </script>
 
 <style scoped>
@@ -326,6 +439,12 @@ const isRequiredParam = (paramKey: string, requiredParams: string[] | undefined)
     color: #303133;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .tool-args {
     margin-top: 8px;
 }
@@ -350,6 +469,12 @@ const isRequiredParam = (paramKey: string, requiredParams: string[] | undefined)
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
+}
+
+.tool-name-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .tool-description {
@@ -410,5 +535,20 @@ const isRequiredParam = (paramKey: string, requiredParams: string[] | undefined)
 
 .required-tag {
     margin-left: 8px;
+}
+
+/* Tab标签样式 */
+.tab-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 折叠面板标题样式 */
+.collapse-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
 }
 </style>

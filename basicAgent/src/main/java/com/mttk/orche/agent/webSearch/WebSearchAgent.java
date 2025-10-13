@@ -29,6 +29,7 @@ import com.mttk.orche.service.support.AgentFile;
 @Control(key = "apiKeySerper", label = "API Key", mandatory = true, size = 1, props = "type:password", bindings = "show:this.data.queryApiType=='serper'")
 
 @Control(key = "model", label = "模型", mode = "select", size = 1, mandatory = true, props = { "url:llmModel/query" })
+@Control(key = "returnFullContent", label = "返回完整结果", description = "选中后会在返回值中包含搜索结果内容,这回导致上下文增大,但是如果后续步骤需要用到搜索结果就需要选中", mode = "checkbox", size = 1, mandatory = false, defaultVal = "true")
 
 public class WebSearchAgent extends AbstractAgent {
 
@@ -63,6 +64,10 @@ public class WebSearchAgent extends AbstractAgent {
                         sb.append("## 需要更多信息:\n").append(result.getRewriteQuery()).append("\n");
                         sb.append("## 原因:\n").append(result.getReason()).append("\n");
                 }
+                if (para.getConfig().getBoolean("returnFullContent", true)) {
+                        sb.append("## 完整内容:\n```markdown\n").append(result.getSummarize()).append("\n\n```\n");
+                }
+
                 //
                 return sb.toString();
         }

@@ -1,5 +1,5 @@
 import type { Component, Ref } from 'vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 import { processMessageInputFunc } from './agentRuntimeProcessMessage'
 import { callApiInternal } from './agentRuntimeShare'
@@ -46,7 +46,7 @@ export interface TreeNode {
 export class AgentRuntime {
     public status: Ref<ExecutionStatusType>     //当前执行状态
     public treeNodes: Ref<TreeNode[]>           //树的节点
-    public selectedNode: Ref<TreeNode | null>  //当前选中的节点
+    private selectedNode: Ref<TreeNode | null>  //当前选中的节点（私有）
     public sessionId: Ref<string>              //会话ID
     public agentId: Ref<string>               //智能体ID
     public agent: Ref<any | null>              //智能体对象
@@ -54,7 +54,9 @@ export class AgentRuntime {
     public agentTemplate: Ref<any> //智能体模板
     public agentInputConfig: Ref<any> //智能体输入配置
     public ready: Promise<void>              // 新增初始化完成标志
+    public autoSwitchNode: Ref<boolean>        //是否自动切换节点
     private messageFunc: (message: any) => void
+
 
     constructor(
         agentId: string
@@ -71,6 +73,7 @@ export class AgentRuntime {
         this.levelStack = []
         this.agentTemplate = ref({})
         this.agentInputConfig = ref({})
+        this.autoSwitchNode = ref(true)  //默认自动切换节点
         //
         this.messageFunc = processMessageInputFunc(this)
         //
@@ -84,7 +87,7 @@ export class AgentRuntime {
         //
         this.status.value = ExecutionStatus.IDLE
         this.treeNodes.value = []
-        this.selectedNode.value = null
+        this.setSelectedNode(null, true)  //初始化时强制设置为null
         this.levelStack = []
         //        
         //
@@ -175,6 +178,32 @@ export class AgentRuntime {
             ElMessage.error('加载智能体模板配置失败')
         }
     }
+
+    /**
+     * 设置选中节点
+     * @param newNode 新的节点
+     * @param force 是否强制设置，默认为false。如果为true，忽略autoSwitchNode的值
+     */
+    public setSelectedNode(newNode: TreeNode | null, force: boolean = false): void {
+        // 只有在autoSwitchNode为true或force为true时才修改节点
+        if (this.autoSwitchNode.value || force) {
+            this.selectedNode.value = newNode
+        }
+    }
+
+    /**
+     * 获取当前选中节点
+     */
+    public getSelectedNode(): TreeNode | null {
+        return this.selectedNode.value
+    }
+
+    /**
+     * 获取当前选中节点的key（用于树组件的current-node-key）
+     */
+    public getSelectedNodeKey = computed(() => {
+        return this.selectedNode.value?.id || null
+    })
 }
 
 // 使用工厂函数创建实例

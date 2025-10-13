@@ -137,7 +137,9 @@ public class MemoryPlanPrompt {
             ```
             tasks中的id必须保持原有已完成任务的id,新任务使用新的id.
             toolCall.id是下一个要执行任务的id.
-
+            ## 背景信息
+            - 当前日期: ${__now}
+            - 严格使用此日期,禁止调用获取当前日期类工具
             ## 可用工具列表
             ${tools}
 

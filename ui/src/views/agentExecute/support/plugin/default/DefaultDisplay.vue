@@ -20,10 +20,7 @@
                             <template #title>
                                 <div class="collapse-title">
                                     <span class="title-text">📝 数据项 {{ index + 1 }}</span>
-                                    <el-button type="primary" plain size="small" @click.stop="copyToClipboard(item)"
-                                        class="copy-button" title="复制内容">
-                                        <icon name="mdiContentCopy" size="small" />
-                                    </el-button>
+                                    <CopyButton :content="item" />
                                 </div>
                             </template>
                             <div class="collapse-content">
@@ -81,10 +78,9 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
 import MarkdownViewer from '@/components/mdViewer/index.vue'
 import FileDisplay from '../../components/fileDisplay/index.vue'
-import Icon from '@/components/mdiIicon/index.vue'
+import CopyButton from '../copyButton.vue'
 import type { AgentRuntime } from '../../agentRuntimeSupport'
 
 interface Props {
@@ -132,17 +128,6 @@ const hasAnyData = computed(() => {
         (props.data?.files?.length > 0) ||
         (props.data?.errors?.length > 0)
 })
-
-// 拷贝到剪贴板
-const copyToClipboard = async (content: string) => {
-    try {
-        await navigator.clipboard.writeText(content)
-        ElMessage.success('内容已复制到剪贴板')
-    } catch (err) {
-        console.error('复制失败:', err)
-        ElMessage.error('复制失败')
-    }
-}
 </script>
 
 <style scoped>
@@ -196,10 +181,6 @@ const copyToClipboard = async (content: string) => {
     gap: 8px;
 }
 
-.title-text {
-    /* flex: 1; */
-}
-
 .collapse-content {
     padding: 10px 0;
 }
@@ -246,22 +227,5 @@ const copyToClipboard = async (content: string) => {
 
 .error-item .item-title {
     color: #f56c6c;
-}
-
-.copy-button {
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 24px;
-    min-height: 24px;
-}
-
-.copy-button .mdi-icon {
-    width: 14px;
-    height: 14px;
 }
 </style>

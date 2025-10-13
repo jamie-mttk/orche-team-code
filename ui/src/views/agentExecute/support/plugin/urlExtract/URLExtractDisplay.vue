@@ -47,7 +47,10 @@
                     <!-- 内容部分 - 根据状态显示 -->
                     <div v-if="props.data.status === 'SUCCESS' || props.data.status === 'IGNORE'"
                         class="content-section">
-                        <h4>内容</h4>
+                        <div class="section-header">
+                            <h4>内容</h4>
+                            <CopyButton :content="String(props.data.content || '')" />
+                        </div>
                         <div class="extracted-content">
                             <MarkdownViewer :key="`content-${Date.now()}`" :value="String(props.data.content || '')" />
                         </div>
@@ -55,7 +58,10 @@
 
                     <!-- 错误部分 - FAIL状态显示 -->
                     <div v-else-if="props.data.status === 'FAIL'" class="error-section">
-                        <h4>错误信息</h4>
+                        <div class="section-header">
+                            <h4>错误信息</h4>
+                            <CopyButton :content="String(props.data.content || '')" />
+                        </div>
                         <div class="error-message">
                             <MarkdownViewer :key="`error-${Date.now()}`" :value="String(props.data.content || '')" />
                         </div>
@@ -68,6 +74,7 @@
 
 <script setup lang="ts">
 import MarkdownViewer from '@/components/mdViewer/index.vue'
+import CopyButton from '../copyButton.vue'
 import type { AgentRuntime } from '../../agentRuntimeSupport';
 import { formatFileSize } from '@/utils/tools'
 interface Props {
@@ -149,6 +156,17 @@ const getStatusText = (): string => {
     color: #303133;
     font-size: 14px;
     font-weight: 600;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 8px;
+}
+
+.section-header h4 {
+    margin: 0;
 }
 
 .content-section,

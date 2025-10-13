@@ -52,6 +52,7 @@ public abstract class BaseReactAgent extends ToolDefineReadyAgent {
             AgentParam para, ChatMemory chatMemory) throws Exception {
         //
         String nextStepPrompt = getNextStepPrompt(para);
+        nextStepPrompt = PromptUtil.parsePrompt(nextStepPrompt, para);
         //
         for (int count = 1; count <= para.getConfig().getInteger("maxSteps", 10); count++) {
             //

@@ -134,7 +134,7 @@ export const processMessageInputFunc = function (agentRuntime: AgentRuntime) {
         }
         //
         // 自动选择新创建的节点，显示其详情
-        agentRuntime.selectedNode.value = treeNode
+        agentRuntime.setSelectedNode(treeNode)
     }
     function handleEndMessage(message: any) {
         const { isError, isFuncSpecial, thisNode } = handlePrecheck(message, 'end')
@@ -158,7 +158,7 @@ export const processMessageInputFunc = function (agentRuntime: AgentRuntime) {
             agentRuntime.levelStack.pop()
         }
         //
-        agentRuntime.selectedNode.value = thisNode
+        agentRuntime.setSelectedNode(thisNode)
 
 
     }
