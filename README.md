@@ -93,7 +93,7 @@ docker run -d   -p 7474:7474      -v orcheteam_db:/data/db  --name orcheteam   o
 测试过千问和 DeepSeek V3，模型必须支持 Function calling，建议使用最大 Token 数大的模型。
 
 ### 智能体配置
-- **互联网搜索**：需要 Serper API Key，可访问 https://serpapi.com/ 注册，免费赠送额度足够使用很长时间
+- **互联网搜索**：需要 Serper API Key，可访问 https://serper.dev 注册，免费赠送额度足够使用很长时间
 - **报告生成助手**：生成 HTML/Markdown/PPT 格式报告
 - **React 智能体**：把互联网搜索和报告生成助手作为合作智能体加入
 
