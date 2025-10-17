@@ -32,6 +32,31 @@
 			<version>1.4.7</version>
 		</dependency>
 
+    <!-- Excel处理 -->
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>5.2.4</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>5.2.4</version>
+    </dependency>
+    <!-- PDF处理 -->
+    <dependency>
+        <groupId>org.apache.pdfbox</groupId>
+        <artifactId>pdfbox</artifactId>
+        <version>3.0.3</version>
+    </dependency>
+
+    <!-- Tabula-Java for PDF table extraction -->
+    <dependency>
+        <groupId>technology.tabula</groupId>
+        <artifactId>tabula</artifactId>
+        <version>1.0.5</version>
+    </dependency>
+
 		<!-- MySQL JDBC Driver -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -60,7 +85,7 @@
 						</goals>
 						<configuration>
 							<includeGroupIds></includeGroupIds>	
-							<includeArtifactIds>jsoup,mail,activation</includeArtifactIds>
+							<includeArtifactIds>jsoup,mail,activation,pdfbox,tabula,poi,poi-ooxml,commons-io,commons-compress,xmlbeans,commons-collections4,ooxml-schemas,poi-ooxml-lite,pdfbox-io,fontbox,commons-logging,commons-cli,jts-core</includeArtifactIds>
 							<outputDirectory>${project.build.directory}/classes/ADDON_INF/lib</outputDirectory>
 							<excludeGroupIds></excludeGroupIds>
 							<overWriteReleases>false</overWriteReleases>

@@ -1,9 +1,11 @@
 package com.mttk.orche.agent.memoryPlan;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.bson.Document;
+import com.mttk.orche.addon.agent.ToolCall;
 import com.mttk.orche.util.StringUtil;
 
 /**
@@ -14,107 +16,26 @@ public class ExecutionPlan {
     private String thinking;
 
     /** 计划项列表 */
-    private List<PlanItem> items;
+    private List<Task> tasks;
 
     public ExecutionPlan() {
-        this.items = new ArrayList<>();
+        this.tasks = new ArrayList<>();
         this.thinking = "";
-    }
-
-    /**
-     * 添加计划项
-     */
-    public void addItem(PlanItem item) {
-        this.items.add(item);
-    }
-
-    /**
-     * 获取下一个待执行的任务
-     */
-    public PlanItem getNextPendingItem() {
-        for (PlanItem item : items) {
-            if (item.getStatus() == PlanItem.Status.NOT_START) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 根据任务ID查找计划项
-     */
-    public PlanItem findItemById(String id) {
-        if (id == null) {
-            return null;
-        }
-        for (PlanItem item : items) {
-            if (id.equals(item.getId())) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 根据工具名称查找计划项
-     */
-    public PlanItem findItemByTool(String toolName) {
-        for (PlanItem item : items) {
-            if (item.getTool().equals(toolName)) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 更新指定任务状态
-     */
-    public void updateItemStatus(PlanItem item, PlanItem.Status status) {
-        item.setStatus(status);
     }
 
     /**
      * 是否全部完成
      */
     public boolean isAllCompleted() {
-        if (items.isEmpty()) {
+        if (tasks.isEmpty()) {
             return false;
         }
-        for (PlanItem item : items) {
-            if (item.getStatus() != PlanItem.Status.COMPLETED) {
+        for (Task item : tasks) {
+            if (item.getStatus() != Task.Status.COMPLETED) {
                 return false;
             }
         }
         return true;
-    }
-
-    /**
-     * 是否有任何失败的任务
-     */
-    public boolean hasFailedItem() {
-        for (PlanItem item : items) {
-            if (item.getResult() == PlanItem.Result.FAILED) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 序列化为JSON字符串
-     */
-    public String toJson() {
-        Document doc = new Document();
-        doc.append("thinking", thinking);
-
-        List<Document> itemDocs = new ArrayList<>();
-        for (PlanItem item : items) {
-            itemDocs.add(item.toJson());
-        }
-        doc.append("items", itemDocs);
-
-        return doc.toJson();
     }
 
     /**
@@ -123,15 +44,9 @@ public class ExecutionPlan {
     public String toReadableText() {
         StringBuilder sb = new StringBuilder();
 
-        if (!StringUtil.isEmpty(thinking)) {
-            sb.append("## 思考\n");
-            sb.append(thinking).append("\n\n");
-        }
-
-        sb.append("## 任务列表\n");
-        for (int i = 0; i < items.size(); i++) {
+        for (int i = 0; i < tasks.size(); i++) {
             sb.append(i + 1).append(". ");
-            sb.append(items.get(i).toString());
+            sb.append(tasks.get(i).toString());
             sb.append("\n");
         }
 
@@ -139,27 +54,97 @@ public class ExecutionPlan {
     }
 
     /**
-     * 清空所有NOT_START状态的任务（用于重新规划）
+     * 根据MemoryPlanResponse更新ExecutionPlan
+     * 
+     * @param planResponse 响应对象
+     * @throws Exception 处理异常
      */
-    public void clearPendingItems() {
-        items.removeIf(item -> item.getStatus() == PlanItem.Status.NOT_START);
+    public void update(MemoryPlanResponse planResponse) throws Exception {
+        // 更新thinking
+        if (!StringUtil.isEmpty(planResponse.getThinking())) {
+            this.thinking = planResponse.getThinking();
+        }
+
+        // 如果planResponse的tasks为空，不处理
+        if (planResponse.getTasks() == null || planResponse.getTasks().isEmpty()) {
+            return;
+        }
+
+        // 创建一个映射，保存原有tasks的状态信息（按id映射）
+        Map<String, Task> existingTasksMap = new HashMap<>();
+        for (Task task : this.tasks) {
+            existingTasksMap.put(task.getId(), task);
+        }
+
+        // 用planResponse的tasks替换，但保留原有的状态信息
+        List<Task> newTasks = new ArrayList<>();
+        for (Task task : planResponse.getTasks()) {
+            // 创建新的Task对象
+            Task newTask = new Task(task.getId(), task.getName(), task.getTool());
+
+            // 如果原有tasks中存在相同id的任务，保留其状态信息
+            Task existingTask = existingTasksMap.get(task.getId());
+            if (existingTask != null) {
+                newTask.setStatus(existingTask.getStatus());
+                newTask.setInputParams(existingTask.getInputParams());
+                newTask.setSuccessOutput(existingTask.getSuccessOutput());
+                newTask.setErrorMessage(existingTask.getErrorMessage());
+            }
+
+            newTasks.add(newTask);
+        }
+
+        // 替换tasks
+        this.tasks = newTasks;
     }
 
-    // Getters and Setters
+    /**
+     * 根据toolCall的id更新对应任务为成功完成状态
+     * 
+     * @param toolCall      工具调用对象
+     * @param successOutput 成功输出
+     */
+    public void updateCall(ToolCall toolCall, String successOutput) {
+        if (toolCall == null || toolCall.getId() == null) {
+            return;
+        }
+
+        for (Task task : this.tasks) {
+            if (toolCall.getId().equals(task.getId())) {
+                task.setStatus(Task.Status.COMPLETED);
+                task.setSuccessOutput(successOutput != null ? successOutput : "");
+                break;
+            }
+        }
+    }
+
+    /**
+     * 根据toolCall的id更新对应任务为失败状态
+     * 
+     * @param toolCall     工具调用对象
+     * @param errorMessage 错误信息
+     */
+    public void updateCallError(ToolCall toolCall, String errorMessage) {
+        if (toolCall == null || toolCall.getId() == null) {
+            return;
+        }
+
+        for (Task task : this.tasks) {
+            if (toolCall.getId().equals(task.getId())) {
+                task.setStatus(Task.Status.FAILED);
+                task.setErrorMessage(errorMessage != null ? errorMessage : "");
+                break;
+            }
+        }
+    }
+
+    // Getters
 
     public String getThinking() {
         return thinking;
     }
 
-    public void setThinking(String thinking) {
-        this.thinking = thinking;
-    }
-
-    public List<PlanItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<PlanItem> items) {
-        this.items = items;
+    public List<Task> getTasks() {
+        return tasks;
     }
 }

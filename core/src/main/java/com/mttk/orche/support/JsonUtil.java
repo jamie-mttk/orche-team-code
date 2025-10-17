@@ -1,5 +1,7 @@
 package com.mttk.orche.support;
 
+import com.mttk.orche.util.StringUtil;
+
 public class JsonUtil {
 
     /**
@@ -38,6 +40,9 @@ public class JsonUtil {
 
     // 去掉可能的```json和}```
     public static String cleanJsonString(String input) {
+        if (StringUtil.isEmpty(input)) {
+            return input;
+        }
         String trimmed = input.trim();
         if (trimmed.isEmpty()) {
             return trimmed;

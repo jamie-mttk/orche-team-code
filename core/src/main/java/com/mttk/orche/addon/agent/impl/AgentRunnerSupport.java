@@ -4,6 +4,7 @@ import org.bson.Document;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mttk.orche.addon.AdapterConfig;
+import com.mttk.orche.addon.agent.Agent;
 import com.mttk.orche.addon.agent.AgentContext;
 import com.mttk.orche.addon.agent.ChatResonseMessage;
 import com.mttk.orche.util.StringUtil;
@@ -66,6 +67,7 @@ public abstract class AgentRunnerSupport {
      * 内部公开的静态类，用于封装AgentRunnerSupport的参数
      */
     public static class AgentParam {
+
         private AgentContext context;
         private AdapterConfig agentConfig;
         private AdapterConfig config;
@@ -73,8 +75,10 @@ public abstract class AgentRunnerSupport {
         private String toolName;
         private AdapterConfig request;
 
-        public AgentParam(AgentContext context, AdapterConfig agentConfig, String requestRaw, String toolName)
+        public AgentParam(AgentContext context, AdapterConfig agentConfig, String requestRaw,
+                String toolName)
                 throws Exception {
+
             this.context = context;
             this.agentConfig = agentConfig;
             this.config = agentConfig.getBean("config");

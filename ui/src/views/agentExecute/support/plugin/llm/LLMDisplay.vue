@@ -12,6 +12,25 @@
                         </div>
                     </template>
                     <div class="tab-content">
+                        <!-- 内容数据 -->
+
+                        <div v-if="llmData.contents && llmData.contents.length > 0" class="feedback-contents">
+                            <el-collapse v-model="feedbackCollapse" class="data-collapse">
+                                <el-collapse-item v-for="(item, index) in llmData.contents" :key="`content-${index}`"
+                                    :name="`content-${index}`">
+                                    <template #title>
+                                        <div class="collapse-title">
+                                            <span class="title-text">📝 数据项 {{ index + 1 }}</span>
+                                            <CopyButton :content="item" />
+                                        </div>
+                                    </template>
+                                    <div class="collapse-content">
+                                        <MarkdownViewer :key="`content-${index}-${Date.now()}`" :value="item" />
+                                    </div>
+                                </el-collapse-item>
+                            </el-collapse>
+                        </div>
+
                         <!-- 反馈消息内容 -->
                         <div v-if="llmData.responseContent" class="feedback-content">
                             <el-collapse v-model="feedbackCollapse">
@@ -100,7 +119,7 @@
                                             <el-card shadow="hover" class="message-card">
                                                 <div class="message-header">
                                                     <span class="message-role">{{ getRoleDisplayName(message.role)
-                                                    }}</span>
+                                                        }}</span>
                                                     <div class="header-actions">
                                                         <el-tag size="small" type="primary">{{ index + 1 }}</el-tag>
                                                         <CopyButton :content="formatMessageContent(message)" />
@@ -129,7 +148,7 @@
                                                             :key="toolIndex" class="tool-call-detail">
                                                             <div class="tool-call-info">
                                                                 <span class="tool-name">{{ toolCall.function?.name
-                                                                }}</span>
+                                                                    }}</span>
                                                                 <div class="header-actions">
                                                                     <el-tag size="small" type="warning">工具</el-tag>
                                                                     <CopyButton
@@ -194,7 +213,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import MarkdownViewer from '@/components/mdViewer/index.vue'
 import CopyButton from '../copyButton.vue'
@@ -211,8 +230,38 @@ const props = defineProps<Props>()
 const activeTab = ref('feedback')
 
 // 折叠面板激活状态
-const feedbackCollapse = ref(['content', 'reasoning', 'tools'])
+const feedbackCollapse = ref<string[]>(['content', 'reasoning', 'tools'])
 const requestCollapse = ref(['messages', 'tools'])
+
+// 计算反馈面板中所有的折叠项name
+const allFeedbackCollapseNames = computed(() => {
+    const names: string[] = []
+
+    // 添加内容数据项
+    if (props.data?.contents?.length > 0) {
+        props.data.contents.forEach((_: any, index: number) => {
+            names.push(`content-${index}`)
+        })
+    }
+
+    // 添加其他固定项
+    if (props.data?.responseContent) {
+        names.push('content')
+    }
+    if (props.data?.responseReasoning) {
+        names.push('reasoning')
+    }
+    if (props.data?.toolCalls?.length > 0) {
+        names.push('tools')
+    }
+
+    return names
+})
+
+// 监听数据变化，自动展开所有面板
+watch(() => allFeedbackCollapseNames.value, (newNames) => {
+    feedbackCollapse.value = [...newNames]
+}, { immediate: true })
 
 // LLM数据
 const llmData = computed(() => {
@@ -220,7 +269,8 @@ const llmData = computed(() => {
         requestData: props.data?.requestData ?? '',
         responseContent: props.data?.responseContent ?? '',
         responseReasoning: props.data?.responseReasoning ?? '',
-        toolCalls: props.data?.toolCalls ?? []
+        toolCalls: props.data?.toolCalls ?? [],
+        contents: props.data?.contents ?? []
     }
 })
 
@@ -373,12 +423,22 @@ const formatToolDefinition = (tool: any): string => {
     padding: 20px 0;
 }
 
+.feedback-contents,
 .feedback-content,
 .feedback-reasoning,
 .feedback-tools,
 .request-messages,
 .request-tools {
     margin-bottom: 20px;
+}
+
+.data-collapse {
+    border: none;
+}
+
+.title-text {
+    font-weight: 600;
+    font-size: 14px;
 }
 
 .messages-list {

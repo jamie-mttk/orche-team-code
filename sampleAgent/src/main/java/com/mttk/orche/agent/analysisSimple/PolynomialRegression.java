@@ -125,6 +125,7 @@ public class PolynomialRegression {
         } catch (NumberFormatException e) {
             try {
                 // 946656000000 = 2000/01/01
+                value = value.substring(0, Config.dateFormat.length());
                 Double v = (sdf.parse(value).getTime() - 946656000000l) / (1000.0 * 60 * 60 * 24); // 转换为天数
                 return v.intValue();
             } catch (ParseException ex) {
@@ -302,7 +303,7 @@ public class PolynomialRegression {
          * - "dd/MM/yyyy"
          * - "MM/dd/yyyy HH:mm:ss"
          */
-        private String dateFormat = "yyyy-MM-dd";
+        public static String dateFormat = "yyyy-MM-dd";
 
         // 默认构造函数
         public Config() {

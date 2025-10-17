@@ -76,7 +76,7 @@ public class SqlQueryAgent extends AbstractAgent implements RequestTarget {
                 // 生成描述
                 StringBuilder sb1 = new StringBuilder(1024);
                 sb1.append("**查询请求**:\n").append(query).append("\n");
-                sb1.append("**生成SQL**:\n").append(sql).append("\n");
+                sb1.append("**SQL语句**:\n").append(sql).append("\n");
                 sb1.append("**SQL说明**:\n").append(explanation).append("\n");
                 sb1.append("**表头**:\n").append(queryResult.getHeader()).append("\n");
                 sb1.append("**数据行数**:\n").append(queryResult.getCount()).append("\n");
@@ -90,7 +90,8 @@ public class SqlQueryAgent extends AbstractAgent implements RequestTarget {
                 StringBuilder sb = new StringBuilder(1024);
                 //
 
-                sb.append(String.format("针对 \"%s\" 的查询已经生成并保存到文件 \"%s\"\n", query, agentFile.getFileName()));
+                sb.append(String.format("查询结果保存到会话文件 \n"));
+                sb.append("**会话文件名**:\n").append(agentFile.getFileName()).append("\n");
                 sb.append(description);
                 //
                 // System.out.println("~~~~~~~~~~~~~~~~\n" + sb);

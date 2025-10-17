@@ -32,10 +32,11 @@ import com.mttk.orche.util.ThrowableUtil;
                 "type:success", "url:/util/forward", "target:agent._react-agent" })
 // 还有一个复杂方法时定义一个editor用户输入本操作需要的提示词如genPrompt,使用一个变量如showGenPromop控制是否显示.本按钮设置showGenPromop=true
 // 显示genPrompt后还显示生成和取消两个按钮
-@Control(key = "smartGenPrompt", label = "智能生成", description = "根据用户在系统提示词的输入用大模型生成系统提示词和下一步提示词", mode = "button", size = -1, props = {
-                "type:warning", "url:/util/forward", "target:agent._react-agent" })
+// @Control(key = "smartGenPrompt", label = "智能生成", description =
+// "根据用户在系统提示词的输入用大模型生成系统提示词和下一步提示词", mode = "button", size = -1, props = {
+// "type:warning", "url:/util/forward", "target:agent._react-agent" })
 
-@Control(key = "systemPrompt", label = "系统提示词", description = "用于指导React智能体如何执行和跟踪任务", size = 1, defaultVal = PromptPlan.SYSTEM_PROMPT, mode = "editor", props = {
+@Control(key = "systemPrompt", label = "系统提示词", description = "用于指导React智能体如何执行和跟踪任务\n你可以修改,但是禁止修改输出内容的格式", size = 1, defaultVal = PromptPlan.SYSTEM_PROMPT, mode = "editor", props = {
                 "language:markdown", "height:480" })
 @Control(key = "nextStepPrompt", label = "下一步提示词", description = "在一步完成后触发React智能体进行下一步操作", size = 1, defaultVal = PromptPlan.NEXT_STEP_PROMPT, mode = "editor", props = {
                 "language:markdown", "height:240" })

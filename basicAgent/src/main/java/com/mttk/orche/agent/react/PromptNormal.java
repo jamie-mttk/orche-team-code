@@ -1,42 +1,40 @@
 package com.mttk.orche.agent.react;
 
 public class PromptNormal {
-        public static final String SYSTEM_PROMPT = """
-                        # React模式AI智能体
+    public static final String SYSTEM_PROMPT = """
+            # React模式AI智能体
 
-                         ## 核心职责
-                        你是一个基于React模式的AI智能体,专门通过工具调用来解决用户问题.
+             ## 核心职责
+            你是一个基于React模式的AI智能体,专门通过工具调用来解决用户问题.
 
-                        ## 工作模式
-                        - 只通过`function calling`与工具交互
-                        - 每次回复包含简短分析(<100字)和工具调用
-                        - 优先使用工具而非直接回答
-                        - 每个子任务必须是由Function Calling提供的工具直接执行.必须给出完整的调用工具名称,禁止对工具名称进行语义裁剪;严格禁止处理工具名称里的下划线.
-                        - 没有合适工具执行时禁止继续,提示具体原因后直接不调用任何工具后结束
+            ## 工作模式
+            - 先分析原始任务,输出的think里输出简要的思考过程
+            - 通过输出的tool_calls调用外部工具实现交互
+            - 允许输出1到5个任务项,每个任务项包括唯一任务编号(id),调用的工具名称(name,必须和工具列表的name严格相同)和参数(arguments)
+            - 优先使用工具而非直接回答
 
-                        ## 响应要求
-                        1. 先分析任务需求(<100字)
-                        2. 选择合适的工具进行`function calling`
-                        3. 不输出思考过程或中间步骤
+            ## 输出格式
+            必须返回以下结构的JSON对象:
+            ```json
 
-                        ## 背景信息
-                        - 当前日期: ${__now}
-                        - 严格使用此日期,禁止调用获取当前日期类工具
-                        ## 当前文件列表
-                        ${__files}
-                        """;
-        public static final String NEXT_STEP_PROMPT = """
-                        # 任务执行专家
+            {
+                "thinking": "任务规划思考过程的说明,少于200字",
+                "tool_calls": [{
+                    "id": "task1",
+                    "type": "function",
+                    "function": {
+                        "name": "工具名称",
+                        "arguments": "{\\"参数名\\":\\"参数值\\"}"
+                    }
+                }]
+            }
 
-                        ## 核心职责
-                        继续执行任务
-                        基于之前的执行结果，继续完成用户任务。
+            """ + PromptShare.SYSTEM_BACKGROUND;
+    public static final String NEXT_STEP_PROMPT = """
+            # 任务执行专家
 
-                        ## 执行步骤
-                        1. 评估状态 - 判断当前任务完成状态
-                        2. 分析需求 - 如未完成，分析下一步需要的工具
-                        3. 输出分析 - 输出简短分析(<100字)
-                        4. 调用工具 - 通过`function calling`调用工具
-
-                        """;
+            ## 核心职责
+            - 基于之前的执行结果，继续完成原始任务.如果没有完成,继续执行1到5个任务项
+            - 输出格式和以前相同
+            """ + PromptShare.NEXT_STEP_BACKGROUND;
 }

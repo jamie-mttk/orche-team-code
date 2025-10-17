@@ -8,7 +8,6 @@ import org.bson.Document;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mttk.orche.addon.AdapterConfig;
 import com.mttk.orche.addon.RequestTarget;
-import com.mttk.orche.addon.agent.ChatResonseMessage;
 import com.mttk.orche.addon.agent.impl.AbstractAgent;
 import com.mttk.orche.addon.agent.impl.AgentRunnerSupport.AgentParam;
 import com.mttk.orche.addon.annotation.AgentTemplateFlag;

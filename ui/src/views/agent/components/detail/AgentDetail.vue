@@ -39,11 +39,11 @@
               <span class="title-text">智能体配置</span>
             </div>
           </template>
-          <!-- <el-form ref="configFormRef" :model="formData.config" :rules="configRules" label-width="120px"
-            class="config-form">
 
-          </el-form> -->
-          <CdForm ref="configFormRef" :config="agentTempalteUiConfig" :data="formData.config || {}" />
+          <CdForm v-if="agentTempalteUiConfig.children && agentTempalteUiConfig.children.length > 0" ref="configFormRef"
+            :config="agentTempalteUiConfig" :data="formData.config || {}" />
+          <el-empty v-else description="此智能体不需要任何配置" :image-size="120" />
+
         </el-collapse-item>
 
         <!-- 合作智能体部分 -->

@@ -61,6 +61,7 @@
                                     <div class="item-header">
                                         <span class="item-title">
                                             <span>❌ 错误 {{ index + 1 }}</span>
+                                            <CopyButton :content="item" />
                                         </span>
                                     </div>
                                     <div class="item-content">
@@ -201,6 +202,9 @@ const hasAnyData = computed(() => {
 }
 
 .item-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-weight: 600;
     color: #303133;
     font-size: 14px;

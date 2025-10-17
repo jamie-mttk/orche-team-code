@@ -34,7 +34,11 @@ public class PromptUtil {
                     return obj;
                 }
                 //
-                return callback.apply(key);
+                if (callback != null) {
+                    return callback.apply(key);
+                } else {
+                    return null;
+                }
             }
         });
     }

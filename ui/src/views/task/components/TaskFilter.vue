@@ -11,6 +11,13 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item>
+                    <el-input v-model="filterForm.request" placeholder="搜索请求体..." clearable>
+                        <template #prefix>
+                            <Icon name="magnify" size="small" />
+                        </template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item>
                     <el-select v-model="filterForm.status" placeholder="状态筛选" clearable style="width: 320px">
                         <el-option label="全部" value="" />
                         <el-option label="执行中" value="running" />
@@ -87,6 +94,22 @@ const dateShortcuts = [
             const startOfMonth = moment().startOf('month').format('YYYY-MM-DD 00:00:00')
             const nextMonth = moment().add(1, 'month').startOf('month').format('YYYY-MM-DD 00:00:00')
             return [startOfMonth, nextMonth]
+        }
+    },
+    {
+        text: '上月',
+        value: () => {
+            const startOfLastMonth = moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD 00:00:00')
+            const startOfThisMonth = moment().startOf('month').format('YYYY-MM-DD 00:00:00')
+            return [startOfLastMonth, startOfThisMonth]
+        }
+    },
+    {
+        text: '本年',
+        value: () => {
+            const startOfYear = moment().startOf('year').format('YYYY-MM-DD 00:00:00')
+            const nextYear = moment().add(1, 'year').startOf('year').format('YYYY-MM-DD 00:00:00')
+            return [startOfYear, nextYear]
         }
     }
 ]

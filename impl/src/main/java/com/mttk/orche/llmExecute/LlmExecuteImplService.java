@@ -24,7 +24,9 @@ import com.mttk.orche.addon.annotation.ServiceFlag.SERVICE_TYPE;
 import com.mttk.orche.core.impl.AbstractService;
 import com.mttk.orche.service.LlmExecuteService;
 import com.mttk.orche.service.LlmModelService;
+import com.mttk.orche.service.support.LlmExecuteEventListener;
 import com.mttk.orche.support.ServerUtil;
+import com.mttk.orche.util.LangUtil;
 import com.mttk.orche.util.StringUtil;
 import com.mttk.orche.util.ThrowableUtil;
 
@@ -37,7 +39,7 @@ public class LlmExecuteImplService extends AbstractService implements LlmExecute
 
     @Override
     public ChatMessage call(AgentContext context, String modelId, String name, List<ChatMessage> messages,
-            List<String> functions)
+            List<String> functions, LlmExecuteEventListener listener)
             throws Exception {
         // 生成请求的唯一标识号
         String requestId = StringUtil.getUUID();
@@ -53,6 +55,12 @@ public class LlmExecuteImplService extends AbstractService implements LlmExecute
 
         // 发送请求数据消息
         sendResponse(context, "_llm-request", requestId, requestBody);
+        // 抛出事件
+        if (listener != null) {
+            LangUtil.suppressThrowable(() -> {
+                listener.onRequest(requestId, requestBody);
+            });
+        }
 
         // 创建HTTP请求
         HttpRequest request = HttpRequest.newBuilder()
@@ -109,12 +117,19 @@ public class LlmExecuteImplService extends AbstractService implements LlmExecute
 
         // 等待异步操作完成
         future.join();
-
+        //
+        ChatMessage responseMessage = responseCollector.buildResponseMessage();
+        // 抛出事件
+        if (listener != null) {
+            LangUtil.suppressThrowable(() -> {
+                listener.onResponse(requestId, responseMessage);
+            });
+        }
         // 发送LLM结束消息
         sendResponse(context, "_llm-end", requestId);
 
         // 返回收集到的响应
-        return responseCollector.buildResponseMessage();
+        return responseMessage;
 
     }
 

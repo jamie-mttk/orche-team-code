@@ -1,5 +1,9 @@
 package com.mttk.orche.addon.agent.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.bson.Document;
@@ -9,7 +13,10 @@ import com.mttk.orche.addon.agent.ChatMemory;
 import com.mttk.orche.addon.agent.ChatMessage;
 import com.mttk.orche.addon.agent.ChatResonseMessage;
 import com.mttk.orche.addon.agent.MessageRole;
+import com.mttk.orche.addon.agent.ToolCall;
 import com.mttk.orche.addon.agent.impl.AgentRunnerSupport.AgentParam;
+import com.mttk.orche.addon.agent.impl.BaseReactAgentUtil.BaseReactResult;
+import com.mttk.orche.service.support.LlmExecuteEventListener;
 import com.mttk.orche.util.StringUtil;
 
 public abstract class BaseReactAgent extends ToolDefineReadyAgent {
@@ -51,8 +58,12 @@ public abstract class BaseReactAgent extends ToolDefineReadyAgent {
     private void executeByStep(
             AgentParam para, ChatMemory chatMemory) throws Exception {
         //
-        String nextStepPrompt = getNextStepPrompt(para);
-        nextStepPrompt = PromptUtil.parsePrompt(nextStepPrompt, para);
+        String nextStepPromptRaw = getNextStepPrompt(para);
+
+        // 记录上次工具执行结果,用于生成到第二步的提示词中
+        List<String> lastToolCallResults = new ArrayList<>();
+        // 用于生成结果的markdown格式
+        Map<String, String> lastToolCallResultsMap = new HashMap<>();
         //
         for (int count = 1; count <= para.getConfig().getInteger("maxSteps", 10); count++) {
             //
@@ -62,6 +73,12 @@ public abstract class BaseReactAgent extends ToolDefineReadyAgent {
             name += " (第" + count + "轮)";
             //
             String transactionId = StringUtil.getUUID();
+            //
+            String nextStepPrompt = PromptUtil.parsePrompt(nextStepPromptRaw, para,
+                    Map.of("lastToolCallResults", String.join("\n", lastToolCallResults)));
+            // 清空上次工具执行结果
+            lastToolCallResults.clear();
+            lastToolCallResultsMap.clear();
             //
             Document agentStartData = new Document();
             agentStartData.append("name", name);
@@ -84,11 +101,24 @@ public abstract class BaseReactAgent extends ToolDefineReadyAgent {
             // LLMExecutor(para.getConfig().getString("model"));
             ChatMessage response = AgentUtil.callLlm(para
                     .getContext(), para.getConfig().getString("model"), "任务规划", chatMemory.getMessages(),
-                    AgentUtil.getFunctions(para.getContext(), para.getAgentConfig()));
+                    null, new LlmExecuteEventListener() {
+                        @Override
+                        public void onResponse(String requestId, ChatMessage responseMessage) throws Exception {
+                            BaseReactResult r = BaseReactAgentUtil
+                                    .parseBaseReactResult(responseMessage.getContent());
+                            para.getContext().sendResponse(new ChatResonseMessage("_data-content",
+                                    requestId, BaseReactAgentUtil.resultToMarkdown(r, null)));
+                        }
+                    });
             // assistant message
             chatMemory.addMessage(response);
+
             //
-            if (response.getToolCalls().isEmpty()) {
+            BaseReactResult baseReactResult = BaseReactAgentUtil.parseBaseReactResult(response.getContent());
+            //
+
+            //
+            if (baseReactResult.getToolCalls().isEmpty()) {
                 // logger.info("没有任何工具调用需要执行完成");
                 //
                 para.getContext().sendResponse(new ChatResonseMessage("_agent-end", transactionId));
@@ -96,14 +126,21 @@ public abstract class BaseReactAgent extends ToolDefineReadyAgent {
                 break;
             } else {
                 // 执行工具
-                AgentUtil.handleTools(para.getContext(), response, chatMemory);
+                for (ToolCall toolCall : baseReactResult.getToolCalls()) {
+                    String result = AgentUtil.handleTool(para.getContext(), toolCall);
+                    lastToolCallResultsMap.put(toolCall.getId(), result);
+                    // 构建markdown格式的结果
+                    String markdownResult = String.format("### %s - %s\n```markdown\n%s\n```",
+                            toolCall.getId(),
+                            toolCall.getFunctionName(),
+                            result);
+                    lastToolCallResults.add(markdownResult);
+                }
                 //
                 //
-                para.getContext().sendResponse(new ChatResonseMessage("_agent-end", transactionId));
+                para.getContext().sendResponse(new ChatResonseMessage("_agent-end", transactionId,
+                        BaseReactAgentUtil.resultToMarkdown(baseReactResult, lastToolCallResultsMap)));
             }
-
         }
-
     }
-
 }

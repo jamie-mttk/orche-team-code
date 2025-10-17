@@ -83,9 +83,11 @@ export class DefaultDisplayResult extends BaseDisplayResult {
     }
     protected handleOtherMessage(message: any): void {
         if (message.type === '_data-content') {
+
             this.contents.push(message.data)
         } else if (message.type === '_file-upload') {
             this.files.push(JSON.parse(message.data))
+
         }
     }
 }

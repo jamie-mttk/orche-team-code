@@ -56,8 +56,10 @@ class AgentSupport {
     private static AgentInfo getInfo(String agentId) throws Exception {
         // 1.获得Agent信息
         AgentService agentService = ServerUtil.getService(AgentService.class);
-        Document agentDoc = agentService.load(agentId)
-                .orElseThrow(() -> new RuntimeException("Agent not found: " + agentId));
+        Document agentDoc = agentService.load(agentId).orElse(null);
+        if (agentDoc == null) {
+            return null;
+        }
         //
 
         // 2.得到实现类
@@ -81,6 +83,9 @@ class AgentSupport {
             throws Exception {
         // 获取Agent信息
         AgentInfo agentInfo = getInfo(agentId);
+        if (agentInfo == null) {
+            throw new RuntimeException("No agent is found by " + agentId);
+        }
 
         // 3.调用Agent config/request
         return agentInfo.getAgent().execute(context, context.createAdapterConfig(agentInfo.getAgentDoc()), request,
@@ -91,6 +96,9 @@ class AgentSupport {
     public static List<String> getToolDefine(AgentContext context, String agentId) throws Exception {
         // 获取Agent信息
         AgentInfo agentInfo = getInfo(agentId);
+        if (agentInfo == null) {
+            return null;
+        }
         //
         return agentInfo.getAgent().getToolDefine(context.createAdapterConfig(agentInfo.getAgentDoc()));
     }
@@ -146,7 +154,7 @@ class AgentSupport {
             //
             File fileToLoad = new File(uploadPath, id);
             byte[] content = FileHelper.readFile(fileToLoad);
-            //不删除,这样可以重复利用
+            // 不删除,这样可以重复利用
             fileToLoad.deleteOnExit();
             AgentFile agentFile = AgentUtil.getAgentFileService(context).upload(context, file.getString("name"),
                     file.getString("description"), content);

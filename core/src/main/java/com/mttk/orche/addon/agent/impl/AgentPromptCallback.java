@@ -3,6 +3,7 @@ package com.mttk.orche.addon.agent.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.mttk.orche.addon.agent.impl.AgentRunnerSupport.AgentParam;
 import com.mttk.orche.service.support.AgentFile;
@@ -30,7 +31,7 @@ public class AgentPromptCallback implements Function<String, Object> {
         if (key.startsWith("__")) {
             return applySystem(key.substring(2));
         }
-        // /_开头的是AGent参数的
+        // /_开头的是Agent请求里获取
         if (key.startsWith("_")) {
             return applyAgent(agentParam, key.substring(1));
         }
@@ -47,9 +48,22 @@ public class AgentPromptCallback implements Function<String, Object> {
             return AgentUtil.now();
         } else if ("files".equals(key)) {
             return generateFilesPrompt();
+        } else if ("tools".equals(key)) {
+            return generateTools();
         }
+
         //
         return null;
+    }
+
+    private String generateTools() {
+        try {
+            return "[" + AgentUtil.getFunctions(agentParam.getContext(), agentParam.getAgentConfig()).stream()
+                    .collect(Collectors.joining(", ")) + "]";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private Object applyAgent(AgentParam agentParam, String key) {
@@ -57,7 +71,7 @@ public class AgentPromptCallback implements Function<String, Object> {
         if (agentParam == null) {
             return null;
         }
-        return agentParam.getConfig().get(key);
+        return agentParam.getRequest().get(key);
     }
 
     private String generateFilesPrompt() {
@@ -69,15 +83,23 @@ public class AgentPromptCallback implements Function<String, Object> {
             return "";
         }
         if (agentFiles == null || agentFiles.isEmpty()) {
-            return "";
+            return "(无)";
         }
         //
         StringBuilder sb = new StringBuilder();
-        for (AgentFile agentFile : agentFiles) {
-            sb.append("### ").append(agentFile.getFileName()).append("\n");
-            sb.append("描述: ").append(agentFile.getDescription()).append("\n");
-            sb.append("大小: ").append(agentFile.getSize()).append("\n\n");
+
+        for (int i = 0; i < agentFiles.size(); i++) {
+            AgentFile agentFile = agentFiles.get(i);
+            // 文件名作为三级标题
+            sb.append("### ").append(agentFile.getFileName()).append("\n\n");
+            // 描述作为文本
+            if (agentFile.getDescription() != null && !agentFile.getDescription().isEmpty()) {
+                sb.append("```markdown\n").append(agentFile.getDescription()).append("\n```").append("\n\n");
+            }
+            // 文件大小信息
+            // sb.append("文件大小: ").append(agentFile.getSize()).append(" 字节\n\n");
         }
+
         return sb.toString();
     }
 

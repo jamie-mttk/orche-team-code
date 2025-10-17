@@ -37,8 +37,7 @@ public class ThinkKeyWords {
         });
         // prompt = prompt.replace("${KeywordNum}", config.getInteger("KeywordNum") +
         // "");
-        // prompt = prompt.replace("${now}", new SimpleDateFormat("yyyy-MM-dd
-        // HH:mm:ss").format(new Date()));
+
         // logger.info("prompt of thinkAndDecompose:\n" + prompt);
         String result = AgentUtil.callLlm(para.getContext(), para.getConfig().getString("model"), "查询关键字分解", prompt);
 

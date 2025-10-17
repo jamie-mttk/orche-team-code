@@ -22,12 +22,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mttk.orche.addon.AdapterConfig;
 import com.mttk.orche.addon.agent.AgentContext;
-import com.mttk.orche.addon.agent.ChatResonseMessage;
 import com.mttk.orche.addon.agent.impl.AbstractAgent;
 import com.mttk.orche.addon.agent.impl.AgentRunnerSupport.AgentParam;
 import com.mttk.orche.addon.agent.impl.AgentUtil;
@@ -46,8 +42,10 @@ import com.mttk.orche.util.StringUtil;
 @Control(key = "emailSender", label = "发送邮箱地址", size = 1, mandatory = true)
 @Control(key = "to", label = "接收邮箱地址", size = 1)
 @Control(key = "cc", label = "抄送邮箱地址", size = 1)
+@Control(key = "_files", label = "文件", description = "相关文件.值为文件名,多个用逗号分割.", size = 1, mandatory = false, mode = "files")
 public class EmailSendAgent extends AbstractAgent {
-    private static final Logger logger = LoggerFactory.getLogger(EmailSendAgent.class);
+    // private static final Logger logger =
+    // LoggerFactory.getLogger(EmailSendAgent.class);
 
     @Override
     protected String executeInternal(AgentParam para, String transactionId) throws Exception {

@@ -9,14 +9,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +36,6 @@ import com.mttk.orche.service.AgentExecuteCancelService.CANCEL_RESULT;
 import com.mttk.orche.service.AgentExecuteService;
 import com.mttk.orche.service.support.AgentExecuteRequest;
 import com.mttk.orche.support.ServerUtil;
-import com.mttk.orche.util.StringUtil;
 
 @RestController
 @RequestMapping(value = "/chat")
@@ -175,47 +172,55 @@ public class ChatController {
         return new Document("result", result.name());
     }
 
-    @GetMapping(value = "/fileDownload", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<byte[]> fileDownload(@RequestParam("sessionId") String sessionId,
-            @RequestParam("fileName") String fileName) {
+    @GetMapping(value = "/fileDownload")
+    public void fileDownload(@RequestParam("sessionId") String sessionId,
+            @RequestParam("fileName") String fileName,
+            javax.servlet.http.HttpServletResponse response) {
         try {
-            // 直接使用GET参数
-
+            // 参数验证
             if (sessionId == null || sessionId.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body("Session ID cannot be empty".getBytes());
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getOutputStream().write("Session ID cannot be empty".getBytes("UTF-8"));
+                return;
             }
 
             if (fileName == null || fileName.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body("File name cannot be empty".getBytes());
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getOutputStream().write("File name cannot be empty".getBytes("UTF-8"));
+                return;
             }
+
             // 得到文件内容
             byte[] fileData = ServerUtil.getService(AgentExecuteService.class).loadAgentFile(sessionId, fileName);
 
             if (fileData == null || fileData.length == 0) {
-                return ResponseEntity.notFound().build();
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
             }
 
-            // 设置响应头
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            // 设置响应头 - 直接设置为二进制流，不使用字符编码
+            response.setContentType("application/octet-stream");
             String encodeFileName = URLEncoder.encode(fileName, "UTF-8")
                     .replace("+", "%20"); // 将"+"替换为"%20"
-            headers.setContentDispositionFormData("attachment", encodeFileName);
-            headers.setContentLength(fileData.length);
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + encodeFileName + "\"");
+            response.setContentLength(fileData.length);
 
-            // logger.info("File download successful: sessionId={}, fileName={}, size={}
-            // bytes",
-            // sessionId, fileName, fileData.length);
+            // logger.info("File download scduccessful:" + fileData.length);
 
-            return new ResponseEntity<>(fileData, headers, HttpStatus.OK);
+            // 直接写入二进制数据，避免任何字符编码转换
+            response.getOutputStream().write(fileData);
+            response.getOutputStream().flush();
 
         } catch (Exception e) {
             logger.error("File download failed: sessionId={}, fileName={}",
                     sessionId, fileName, e);
-
-            String errorMessage = "File download failed: " + e.getMessage();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(errorMessage.getBytes());
+            try {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                String errorMessage = "File download failed: " + e.getMessage();
+                response.getOutputStream().write(errorMessage.getBytes("UTF-8"));
+            } catch (Exception ex) {
+                logger.error("Error writing error response", ex);
+            }
         }
     }
 

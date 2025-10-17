@@ -1,10 +1,10 @@
 import { reactive, shallowRef, type Component, type Reactive, type Ref, isRef } from 'vue'
-import { BaseDisplayResult } from '../displayResultBase'
+import { BaseDisplayResult, DefaultDisplayResult } from '../displayResultBase'
 import LLMDisplay from './LLMDisplay.vue'
 import type { AgentRuntime } from '../../agentRuntimeSupport'
 
 // LLM显示实现
-export class LLMDisplayResult extends BaseDisplayResult {
+export class LLMDisplayResult extends DefaultDisplayResult {
     private requestData: string = ''
     private responseContent: string = ''
     private responseReasoning: string = ''
@@ -95,15 +95,18 @@ export class LLMDisplayResult extends BaseDisplayResult {
                 // 如果解析失败，直接追加原始数据
                 this.responseContent += message.data
             }
+        } else {
+            // console.log('@@@@@@@@@@@@@@@@@@LLMDisplayResult handleOtherMessage', message)
+            super.handleOtherMessage(message)
         }
     }
     getData(): any {
         return {
             requestData: this.requestData,
             responseContent: this.responseContent,
-
             responseReasoning: this.responseReasoning,
-            toolCalls: this.toolCalls
+            toolCalls: this.toolCalls,
+            contents: this.contents
         }
     }
 }

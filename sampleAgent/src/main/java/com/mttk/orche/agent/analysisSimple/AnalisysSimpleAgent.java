@@ -43,6 +43,7 @@ public class AnalisysSimpleAgent extends AbstractAgent {
 
                         PolynomialRegression.Config config1 = new PolynomialRegression.Config();
                         config1.setPolynomialDegree(config.getInteger("degree", 3));
+                        
 
                         PolynomialRegression.Result result = PolynomialRegression.analyze(
                                         input, output, independentVars, dependentVar, config1);

@@ -14,7 +14,7 @@ public abstract class AbstractAgent extends ToolDefineReadyAgent {
     public String execute(AgentContext context, AdapterConfig agentConfig, String request, String toolName)
             throws Exception {
         // 使用函数式接口和方法引用，代码更加简洁优雅
-        return AgentRunnerSupport.execute(context, agentConfig, request,toolName, this::executeInternal);
+        return AgentRunnerSupport.execute(context, agentConfig, request, toolName, this::executeInternal);
     }
 
     /**

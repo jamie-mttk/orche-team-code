@@ -15,7 +15,7 @@ interface Props {
 const props = defineProps<Props>()
 
 // 检测内容类型的函数
-const detectContentType = (content: string): 'html' | 'markdown' => {
+const detectContentType = (content: string): 'html' | 'markdown' | 'json' => {
     const trimmedContent = content.trim()
 
     // 检测是否以<!DOCTYPE html>开头
@@ -42,7 +42,26 @@ const detectContentType = (content: string): 'html' | 'markdown' => {
         }
     }
 
+
     return 'markdown'
+}
+
+// 处理嵌套的markdown代码块
+const processNestedMarkdown = (content: string): string => {
+    // 匹配 ```markdown ... ``` 代码块
+    const markdownCodeBlockRegex = /```markdown\s*\n([\s\S]*?)```/g
+
+    return content.replace(markdownCodeBlockRegex, (match, innerContent) => {
+        try {
+            // 递归渲染嵌套的markdown内容
+            const renderedInner = marked(innerContent.trim())
+            // 用一个特殊的div包裹，添加样式区分
+            return `<div class="nested-markdown">${renderedInner}</div>`
+        } catch (error) {
+            console.error('嵌套Markdown渲染失败:', error)
+            return match // 如果渲染失败，保留原始内容
+        }
+    })
 }
 
 // 渲染的Markdown内容
@@ -60,8 +79,10 @@ const renderedMarkdown = computed(() => {
     }
 
     try {
-        // 如果是Markdown，使用marked处理
-        return marked(value)
+        // 先处理嵌套的markdown代码块
+        const processedValue = processNestedMarkdown(value)
+        // 然后使用marked处理整体内容
+        return marked(processedValue)
     } catch (error) {
         console.error('Markdown渲染失败:', error)
         return value
@@ -97,8 +118,8 @@ const renderedMarkdown = computed(() => {
 .markdown-content :deep(h4),
 .markdown-content :deep(h5),
 .markdown-content :deep(h6) {
-    margin-top: 24px;
-    margin-bottom: 16px;
+    margin-top: 12px;
+    margin-bottom: 8px;
     font-weight: 600;
     line-height: 1.25;
     color: #303133;
@@ -134,18 +155,18 @@ const renderedMarkdown = computed(() => {
 }
 
 .markdown-content :deep(p) {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     color: #303133;
 }
 
 .markdown-content :deep(ul),
 .markdown-content :deep(ol) {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     padding-left: 24px;
 }
 
 .markdown-content :deep(li) {
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     color: #303133;
 }
 
@@ -191,7 +212,7 @@ const renderedMarkdown = computed(() => {
 .markdown-content :deep(table) {
     border-collapse: collapse;
     width: 100%;
-    margin: 16px 0;
+    margin: 8px 0;
     table-layout: fixed;
     word-wrap: break-word;
     word-break: break-all;
@@ -253,5 +274,39 @@ const renderedMarkdown = computed(() => {
 .markdown-content :deep(del) {
     text-decoration: line-through;
     color: #6a737d;
+}
+
+/* 嵌套markdown样式 */
+.markdown-content :deep(.nested-markdown) {
+    padding: 16px;
+    margin: 16px 0;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    border-left: 4px solid #409eff;
+}
+
+.markdown-content :deep(.nested-markdown h1),
+.markdown-content :deep(.nested-markdown h2),
+.markdown-content :deep(.nested-markdown h3),
+.markdown-content :deep(.nested-markdown h4),
+.markdown-content :deep(.nested-markdown h5),
+.markdown-content :deep(.nested-markdown h6) {
+    margin-top: 16px;
+}
+
+.markdown-content :deep(.nested-markdown h1:first-child),
+.markdown-content :deep(.nested-markdown h2:first-child),
+.markdown-content :deep(.nested-markdown h3:first-child),
+.markdown-content :deep(.nested-markdown h4:first-child),
+.markdown-content :deep(.nested-markdown h5:first-child),
+.markdown-content :deep(.nested-markdown h6:first-child) {
+    margin-top: 0;
+}
+
+.markdown-content :deep(.nested-markdown p:last-child),
+.markdown-content :deep(.nested-markdown ul:last-child),
+.markdown-content :deep(.nested-markdown ol:last-child) {
+    margin-bottom: 0;
 }
 </style>

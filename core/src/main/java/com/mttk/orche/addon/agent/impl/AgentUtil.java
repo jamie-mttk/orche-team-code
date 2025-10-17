@@ -20,6 +20,7 @@ import com.mttk.orche.core.ServerLocator;
 import com.mttk.orche.service.AgentFileService;
 import com.mttk.orche.service.LlmExecuteService;
 import com.mttk.orche.service.LlmModelService;
+import com.mttk.orche.service.support.LlmExecuteEventListener;
 import com.mttk.orche.util.StringUtil;
 import com.mttk.orche.util.ThrowableUtil;
 
@@ -60,27 +61,41 @@ public class AgentUtil {
     }
 
     public static String now() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
     }
 
     public static ChatMessage callLlm(AgentParam para, String name, List<ChatMessage> messages,
             List<String> functions)
             throws Exception {
-        return callLlm(para.getContext(), para.getConfig().getString("model"), name, messages, functions);
+        return callLlm(para.getContext(), getModelId(para), name, messages, functions);
+    }
+
+    public static ChatMessage callLlm(AgentParam para, String name, List<ChatMessage> messages,
+            List<String> functions,
+            LlmExecuteEventListener listener)
+            throws Exception {
+        return callLlm(para.getContext(), getModelId(para), name, messages, functions, listener);
     }
 
     public static ChatMessage callLlm(AgentContext context, String modelId, String name, List<ChatMessage> messages,
             List<String> functions)
             throws Exception {
-        return getLlmExecuteService(context).call(context, modelId, name, messages, functions);
+        return callLlm(context, modelId, name, messages, functions, null);
+    }
+
+    public static ChatMessage callLlm(AgentContext context, String modelId, String name, List<ChatMessage> messages,
+            List<String> functions, LlmExecuteEventListener listener)
+            throws Exception {
+        return getLlmExecuteService(context).call(context, modelId, name, messages, functions, listener);
     }
 
     // 简化模式,一次调用
     public static String callLlm(AgentParam para, String name, String prompt) throws Exception {
-        List<ChatMessage> messages = new ArrayList<>();
-        messages.add(ChatMessage.user(prompt));
-        ChatMessage response = callLlm(para, name, messages, null);
-        return response.getContent();
+        return callLlm(para.getContext(), getModelId(para), name, prompt);
+    }
+
+    private static String getModelId(AgentParam para) throws Exception {
+        return para.getConfig().getString("model");
     }
 
     public static String callLlm(AgentContext context, String modelId, String name, String prompt) throws Exception {
@@ -97,7 +112,11 @@ public class AgentUtil {
         }
         List<String> toolDefines = new ArrayList<>();
         for (String member : members) {
-            toolDefines.addAll(context.getToolDefine(member));
+            List<String> single = context.getToolDefine(member);
+            if (single == null) {
+                continue;
+            }
+            toolDefines.addAll(single);
         }
         return toolDefines;
 
@@ -112,7 +131,7 @@ public class AgentUtil {
             // logger.info("CALLING tools..." + toolCall);
             // AgentTool agentTool = new
             // AgentToolManager(context).getByName(toolCall.getFunctionName());
-            String result = handleTool(context, toolCall, chatMemory);
+            String result = handleTool(context, toolCall);
             if (chatMemory != null) {
                 chatMemory.addMessage(ChatMessage.tool(result, toolCall.getId()));
             }
@@ -120,7 +139,7 @@ public class AgentUtil {
         }
     }
 
-    public static String handleTool(AgentContext context, ToolCall toolCall, ChatMemory chatMemory) throws Exception {
+    public static String handleTool(AgentContext context, ToolCall toolCall) throws Exception {
         String[] parts = ToolDefineUtil.partToolName(toolCall.getFunctionName());
         // System.out.println("$$$$$$$ 1:" + toolCall.getFunctionName());
         // System.out.println("$$$$$$$ 2:" + parts[0] + "!!!!!!!!!!!!!!!!!!!" +
